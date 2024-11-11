@@ -1,7 +1,7 @@
 
 ![system_architecture](images/banner.png)
 
-## 개요
+## 🌱 개요
 
 이 프로젝트는 아두이노로 스마트 농업 시스템을 재현하기 위해 개발된 작물 재배 자동화 및 모니터링 솔루션입니다.<br> 센서와 다양한 출력 장치들이 상호작용하여 실시간 데이터 수집하고, <br > 
 환경에 맞춘 자동화 작업을 수행하여,
@@ -10,8 +10,8 @@
 <br>
 <br>
 
-## 기술 스텍
-<div align=center><h1>📚 STACKS</h1></div>
+## 📚 기술 스택
+
 
 <div align=center> 
   <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> 
@@ -34,7 +34,7 @@
 <br>
 <br>
 
-## 기능 명세
+## ⚙️ 기능 명세
 
 | 그룹        | 기능                     | 설명                                                      |
 |-------------|--------------------------|-----------------------------------------------------------|
@@ -68,7 +68,7 @@
 <br>
 <br>
 
-## 시스템 아키텍쳐
+## 🧩 시스템 아키텍처
 <br>
 
 ![system_architecture](images/system_architecture.png)
@@ -76,7 +76,7 @@
 <br>
 <br>
 
-## 3D 설계
+## 🖼️ 3D 설계
 <br>
 
 ![3D_architecture](images/3D_architecture.png)
@@ -90,7 +90,7 @@
 <br>
 
 
-## State Diagram
+## 📊 상태 다이어그램
 <br>
 
 ![State Diagram](images/state_diagram.png)
