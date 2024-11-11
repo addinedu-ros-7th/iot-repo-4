@@ -3,7 +3,33 @@
 
 ## 개요
 
-이 프로젝트는 스마트 농업 시스템을 구축하기 위해 개발된 IoT 기반 자동화 및 모니터링 솔루션입니다.<br> 센서와 데이터베이스, 다양한 출력 장치들이 상호작용하여 실시간 데이터 수집, 분석 및 자동화 작업을 수행하며, 작물 재배 환경을 최적화하는 데 목표를 두고 있습니다.
+이 프로젝트는 아두이노로 스마트 농업 시스템을 재현하기 위해 개발된 작물 재배 자동화 및 모니터링 솔루션입니다.<br> 센서와 다양한 출력 장치들이 상호작용하여 실시간 데이터 수집하고, <br > 
+환경에 맞춘 자동화 작업을 수행하여,
+작물 재배 환경을 최적화하는 데 목표를 두고 있습니다.
+
+<br>
+<br>
+
+## 기술 스텍
+<div align=center><h1>📚 STACKS</h1></div>
+
+<div align=center> 
+  <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> 
+  <img src="https://img.shields.io/badge/c++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white">
+  <br>
+
+  <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
+  <img src="https://img.shields.io/badge/jira-0052CC?style=for-the-badge&logo=jira&logoColor=white">
+  <img src="https://img.shields.io/badge/confluence-172B4D?style=for-the-badge&logo=confluence&logoColor=white">
+  <img src="https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=white">
+  <br>
+  
+  <img src="https://img.shields.io/badge/arduino-00979D?style=for-the-badge&logo=arduino&logoColor=white">
+  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
+
+  <br>
+</div>
+
 
 <br>
 <br>
