@@ -58,3 +58,16 @@
 <br>
 
 ![3D_architecture2](images/3D_architecture2.png)
+
+
+<br>
+<br>
+
+
+## State Diagram
+<br>
+
+![State Diagram](images/state_diagram.png)
+
+<br>
+<br>
