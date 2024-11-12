@@ -1,5 +1,5 @@
 
-![system_architecture](images/banner.png)
+![system_architecture](https://github.com/user-attachments/assets/7bf3d637-bb49-4fa9-bd7a-8d599a98806e)
 
 ***
 
@@ -83,7 +83,7 @@
 ## 🧩 시스템 아키텍처
 <br>
 
-![system_architecture](images/system_architecture.png)
+![system_architecture](https://github.com/user-attachments/assets/1dfb532b-8ad5-4ec1-800c-093da5685d2a)
 
 <br>
 
@@ -94,11 +94,11 @@
 ## 🖼️ 3D 설계
 <br>
 
-![3D_architecture](images/3D_architecture.png)
+![3D_architecture](https://github.com/user-attachments/assets/3daa238a-8bbf-4430-9c6a-e8f8f3b1b478)
 
 <br>
 
-![3D_architecture2](images/3D_architecture2.png)
+![3D_architecture2](https://github.com/user-attachments/assets/270f2bfd-e1f3-47aa-b826-ac5a7e903ea4)
 
 
 <br>
@@ -111,7 +111,7 @@
 ## 📊 상태 다이어그램
 <br>
 
-![State Diagram](images/state_diagram.png)
+![State Diagram](https://github.com/user-attachments/assets/8cf88e12-686f-4a50-be9f-6a50593f0a29)
 
 <br>
 <br>

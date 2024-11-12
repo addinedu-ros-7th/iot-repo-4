@@ -1,34 +1,36 @@
 # 필수 모듈 import
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5 import uic
 import cv2
 import detect_1  # 수정된 detect_1.py 파일 가져오기 (객체 검출 기능을 구현한 모듈)
 import torch
 import numpy as np
 
+from_class, base_class = uic.loadUiType("dashboard.ui")
+
 # 메인 윈도우 클래스 정의
-class MainWindow(QWidget):
+class MainWindow(base_class, from_class):
     def __init__(self):
         super().__init__()
+        self.setupUi(self)  # UI 초기화
         self.setWindowTitle('실시간 객체 검출')  # 윈도우 제목 설정
-        self.image_label = QLabel()  # 이미지 출력할 QLabel 생성
-        self.layout = QVBoxLayout()  # 세로 레이아웃 생성
-        self.layout.addWidget(self.image_label)  # 레이아웃에 이미지 QLabel 추가
-        self.setLayout(self.layout)  # 위젯 레이아웃 설정
 
-        # 객체 검출 옵션 설정
-        self.opt = detect_1.parse_opt()  # detect_1 모듈에서 옵션을 가져옴
-        self.opt.weights = 'best.pt'  # 학습된 모델 가중치 파일 지정
-        self.opt.source = 0  # 웹캠(카메라)을 데이터 소스로 설정
-        self.opt.device = 'cuda' if torch.cuda.is_available() else 'cpu'  # GPU(CUDA) 또는 CPU 선택
-        self.opt.imgsz = (640, 640)  # 입력 이미지 크기 설정
-        self.opt.conf_thres = 0.25  # 검출 신뢰도 임계값 설정
-        self.opt.iou_thres = 0.45  # NMS의 IOU 임계값 설정
-        self.opt.classes = None  # 특정 클래스만 검출할지 여부 (None은 전체 클래스 포함)
-        self.opt.agnostic_nms = False  # 클래스 무관 NMS 사용 여부
-        self.opt.half = False  # FP16(반정밀도) 사용 여부
+        self.detection_array = []  # 클래스 수준에서 빈 리스트로 초기화
+
+        # 객체 검출 옵션 설정 및 모델 초기화
+        self.opt = detect_1.parse_opt()
+        self.opt.weights = 'best.pt'
+        self.opt.source = 0
+        self.opt.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.opt.imgsz = (640, 640)
+        self.opt.conf_thres = 0.25
+        self.opt.iou_thres = 0.45
+        self.opt.classes = None
+        self.opt.agnostic_nms = False
+        self.opt.half = False
 
         # 모델 초기화
         self.model = detect_1.DetectMultiBackend(
@@ -37,14 +39,13 @@ class MainWindow(QWidget):
             dnn=self.opt.dnn,
             data=self.opt.data,
             fp16=self.opt.half
-        )  # 객체 검출 모델을 불러옴
-        self.stride = self.model.stride  # 모델의 stride 값 가져오기
-        self.names = self.model.names  # 클래스 이름들 가져오기
-        self.imgsz = detect_1.check_img_size(self.opt.imgsz, s=self.stride)  # 이미지 크기 유효성 체크
+        )
+        self.stride = self.model.stride
+        self.names = self.model.names
+        self.imgsz = detect_1.check_img_size(self.opt.imgsz, s=self.stride)
 
         # 웹캠 열기
-        self.cap = cv2.VideoCapture(self.opt.source)  # 0번 카메라 연결
-
+        self.cap = cv2.VideoCapture(self.opt.source)
     # 실시간 객체 검출 실행 메서드
     def run(self):
         while True:
@@ -57,6 +58,18 @@ class MainWindow(QWidget):
                 if results:
                     result = results[0]  # 첫 번째 프레임 결과 사용
                     im0 = result['image']
+                    detections = result['detections']  # 검출된 객체 정보
+
+                    # 검출된 객체 정보를 배열 형태로 출력
+                    self.detection_array = []
+                    for detection in detections:
+                        self.detection_array.append({
+                            'bbox': detection['bbox'],
+                            'confidence': detection['confidence'],
+                            'class': detection['class'],
+                            'label': detection['label']
+                        })
+                    # print(self.detection_array)  # 배열 형태로 출력
 
                     # OpenCV 이미지를 PyQt 이미지로 변환하여 표시
                     im0 = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)  # BGR을 RGB로 변환
@@ -146,4 +159,7 @@ if __name__ == '__main__':
     window = MainWindow()  # MainWindow 인스턴스 생성
     window.show()  # 윈도우 표시
     window.run()  # 객체 검출 실행
+    #while True:
+    #    print(window.detection_array)
+    
     sys.exit(app.exec_())  # 앱 실행 후 종료
