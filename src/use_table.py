@@ -4,12 +4,13 @@ import pymysql
 import time
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
-
+from datetime import datetime, timedelta
 
 load_dotenv()
 
 class SmartFarmTable():
     _instance = None
+    _last_slack_notification = None  # 마지막 Slack 메시지 전송 시간을 기록하는 변수
 
     def __new__(cls, *args, **kwargs):
         # 싱글톤 패턴: 이미 생성된 인스턴스가 없을 때만 인스턴스 생성
@@ -33,7 +34,7 @@ class SmartFarmTable():
 
         sql ="""
         CREATE TABLE IF NOT EXISTS SMART_FARM(
-            Time TIMESTAMP PRIMARY KEY DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            Time DATETIME PRIMARY KEY DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             Water_Level INT,
             Nutrient_Level INT,
             Soil_Humidity INT,
@@ -63,12 +64,16 @@ class SmartFarmTable():
             """)
         self.conn.commit()
 
-        slack_token = os.getenv("SLACK_TOKEN")
-        client = WebClient(token=slack_token)
-        try:
-            response = client.chat_postMessage(
-                channel="C07UFQ6DTRD", #채널 id를 입력합니다.
-                text=f"""현재 
+        # Slack 메시지를 10분에 한 번씩만 전송하도록 조건 추가
+        if self._last_slack_notification is None or (datetime.now() - self._last_slack_notification) >= timedelta(minutes=10):
+            # 환경 변수에서 Slack 토큰을 가져와 WebClient 객체 생성
+            slack_token = os.getenv("SLACK_TOKEN")
+            client = WebClient(token=slack_token)
+            try:
+                # 지정된 채널에 현재 상태를 Slack 메시지로 전송
+                response = client.chat_postMessage(
+                    channel="C07UFQ6DTRD",  # 채널 ID를 입력합니다.
+                    text=f"""현재 
                         물 수위: {Water_Level} 
                         배양액 수위 : {Nutrient_Level} 
                         토양 습도 : {Soil_Humidity} 
@@ -77,11 +82,13 @@ class SmartFarmTable():
                         보안 상태 : {Security}
                         정상 작물 개수 : {Abnormal_Crop} 
                         비정상 작물 개수 : {Normal_Crop}
-                        """
-            )
-        except SlackApiError as e:
-            assert e.response["error"]
-
+                    """
+                )
+                # 메시지를 성공적으로 전송한 후 현재 시간을 _last_slack_notification에 저장
+                self._last_slack_notification = datetime.now()  
+            except SlackApiError as e:
+                # Slack 메시지 전송 실패 시 에러 로깅
+                assert e.response["error"]
 
     def get(self, count):
         # SMART_FARM 테이블에서 가장 최근의 데이터를 가져옴
@@ -89,6 +96,7 @@ class SmartFarmTable():
         self.cursor.execute(f"SELECT * FROM SMART_FARM ORDER BY Time DESC LIMIT {count}")
         rows = self.cursor.fetchall()
         return rows
+
 
 
 class UserTable():
