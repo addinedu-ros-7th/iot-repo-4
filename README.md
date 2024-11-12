@@ -83,7 +83,7 @@
 ## 🧩 시스템 아키텍처
 <br>
 
-![system_architecture](https://github.com/user-attachments/assets/1dfb532b-8ad5-4ec1-800c-093da5685d2a)
+![system_architecture](https://github.com/user-attachments/assets/89a47ec8-6b56-4385-8dec-177bcf8193af)
 
 <br>
 
@@ -105,7 +105,8 @@
 
 ***
 
-<br>
+<br>python3 onedayproj.py
+[ WARN:0@12.189] global cap_v4l.cpp:1136 tryIoctl VIDEOIO(V4L2:/dev/video0): select() timeout.
 
 
 ## 📊 상태 다이어그램
