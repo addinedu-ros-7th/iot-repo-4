@@ -74,14 +74,14 @@ class SmartFarmTable():
                 response = client.chat_postMessage(
                     channel="C07UFQ6DTRD",  # 채널 ID를 입력합니다.
                     text=f"""현재 
-                        물 수위: {Water_Level} 
-                        배양액 수위 : {Nutrient_Level} 
-                        토양 습도 : {Soil_Humidity} 
-                        습도 : {Humidity} 
-                        온도 : {Degree}
-                        보안 상태 : {Security}
-                        정상 작물 개수 : {Abnormal_Crop} 
-                        비정상 작물 개수 : {Normal_Crop}
+                        🌊 물 수위: {Water_Level} 
+                        🥤 배양액 수위 : {Nutrient_Level} 
+                        🌱 토양 습도 : {Soil_Humidity} 
+                        💧 습도 : {Humidity} 
+                        🌡️ 온도 : {Degree}
+                        🔒 보안 상태 : {Security}
+                        🌾 정상 작물 개수 : {Abnormal_Crop} 
+                        🧪 비정상 작물 개수 : {Normal_Crop}
                     """
                 )
                 # 메시지를 성공적으로 전송한 후 현재 시간을 _last_slack_notification에 저장
