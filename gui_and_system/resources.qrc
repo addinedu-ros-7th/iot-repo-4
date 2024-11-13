@@ -1,0 +1,15 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+    <file>:/icons/control.png</file>
+    <file>:/icons/dashboard.png</file>
+    <file>:/icons/login.png</file>
+    <file>:/icons/loginbackground.jpg</file>
+    <file>:/icons/logout.png</file>
+    <file>:/icons/menu.png</file>
+    <file>:/icons/power.png</file>
+    <file>:/icons/seedling.png</file>
+    <file>:/icons/sensor.png</file>
+    <file>:/icons/settings.png</file>
+</qresource>
+</RCC>
+

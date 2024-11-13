@@ -1,0 +1,2186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1791</width>
+    <height>1002</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">* {
+    border: none;
+    background-color: transparent;
+    background: none;
+    padding: 0;
+    margin: 0;
+	color: rgb(255, 255, 255);
+}
+
+#centralwidget {
+    background-color: #1f232a;
+}
+
+#leftMenuSubContainer {
+    background-color: #16191d;
+}
+
+#leftMenuSubContainer QPushButton {
+    text-align: left;
+    padding: 5px 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+   color:black;
+}
+
+#headerContainer{
+	background-color: rgb(242, 244, 243);
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item alignment="Qt::AlignLeft">
+     <widget class="QWidget" name="leftMenuContainer" native="true">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(88, 132, 96);</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item alignment="Qt::AlignLeft">
+        <widget class="QWidget" name="leftMenuSubContainer" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>5</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item alignment="Qt::AlignTop">
+           <widget class="QFrame" name="frame">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="menuBtn">
+               <property name="toolTip">
+                <string>menu</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="icons/resources.qrc">
+                 <normaloff>:/menu.png</normaloff>:/menu.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item alignment="Qt::AlignTop">
+           <widget class="QFrame" name="frame_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="DashboardBtn">
+               <property name="toolTip">
+                <string>Dashboard</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(249, 240, 107);
+
+</string>
+               </property>
+               <property name="text">
+                <string>대시보드</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icons/resources.qrc">
+                 <normaloff>:/dashboard.png</normaloff>:/dashboard.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="ControlBtn">
+               <property name="toolTip">
+                <string>Control</string>
+               </property>
+               <property name="text">
+                <string>제어설정</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icons/resources.qrc">
+                 <normaloff>:/control.png</normaloff>:/control.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="SensorBtn">
+               <property name="toolTip">
+                <string>Sensor</string>
+               </property>
+               <property name="text">
+                <string>센서 데이터</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icons/resources.qrc">
+                 <normaloff>:/sensor.png</normaloff>:/sensor.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item alignment="Qt::AlignBottom">
+           <widget class="QFrame" name="frame_3">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="SettingsBtn">
+               <property name="text">
+                <string>관리자</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icons/resources.qrc">
+                 <normaloff>:/settings.png</normaloff>:/settings.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="LogoutBtn">
+               <property name="toolTip">
+                <string>Logout</string>
+               </property>
+               <property name="text">
+                <string>로그아웃</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icons/resources.qrc">
+                 <normaloff>:/logout.png</normaloff>:/logout.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="mainBodyContainer" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(251, 251, 251);</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item alignment="Qt::AlignTop">
+        <widget class="QWidget" name="headerContainer" native="true">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(243, 243, 243);</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QFrame" name="frame_4">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap resource="icons/resources.qrc">:/loginbackground.jpg</pixmap>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="font">
+                <font>
+                 <pointsize>20</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(0, 0, 0);</string>
+               </property>
+               <property name="text">
+                <string>FarmAI</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_5">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_6">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="LoginBtn">
+               <property name="font">
+                <font>
+                 <pointsize>11</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(0, 0, 0);</string>
+               </property>
+               <property name="text">
+                <string>로그인</string>
+               </property>
+               <property name="icon">
+                <iconset resource="icons/resources.qrc">
+                 <normaloff>:/login.png</normaloff>:/login.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>40</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="mainBodyContent" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <widget class="QStackedWidget" name="stackedWidget">
+          <property name="geometry">
+           <rect>
+            <x>-170</x>
+            <y>-6</y>
+            <width>1961</width>
+            <height>1080</height>
+           </rect>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="page_1">
+           <property name="styleSheet">
+            <string notr="true">QGroupBox {
+    color: black;               /* 제목 글자 색 */
+    border: 2px solid #4CAF50;  /* 테두리 색상 */
+    border-radius: 5px;         /* 모서리를 둥글게 */
+	background-color: transparent; /* 배경색을 투명하게 설정 */
+    margin-top: 20px;           /* 제목을 위한 여백을 충분히 확보 */
+}
+
+QGroupBox:title {
+    subcontrol-origin: margin; 
+    subcontrol-position: top center;  /* 제목을 중앙에 위치 */
+    padding: 0 5px;                   /* 제목의 좌우 여백 */
+    background-color: white;          /* 제목 배경색을 흰색으로 설정 */
+    color: black;                     /* 제목 글자 색상 */
+    font-weight: bold;                /* 제목 글씨 굵기 */
+    margin-top: --5px;                /* 제목을 테두리 위로 살짝 올리기 */
+}
+
+/* QLabel의 글자색을 검정색으로 설정 */
+QLabel {
+    color: black;
+	qproperty-alignment: 'AlignCenter'; 
+	 background-color: transparent; /* 배경색을 투명하게 설정 */	
+}
+
+
+QProgressBar {
+    border: 1px solid #4CAF50;
+}
+
+QLCDNumber {
+    border: 2px solid #4CAF50;  /* 테두리 색상을 녹색으로 설정 */
+    border-radius: 5px;         /* 모서리를 둥글게 설정 */
+    background-color: white;    /* 배경색을 검정색으로 설정 */
+    color: black;               /* 숫자 색상을 흰색으로 설정 */
+}
+
+QPushButton {
+    background-color: lightgray; /* 밝은 회색 배경 */
+    color: black; /* 텍스트 색상 */
+    border: 2px solid gray; /* 테두리 색상 */
+    border-radius: 10px; /* 둥근 모서리 */
+    padding: 5px;
+}
+</string>
+           </property>
+           <widget class="QGroupBox" name="groupBox">
+            <property name="geometry">
+             <rect>
+              <x>290</x>
+              <y>40</y>
+              <width>371</width>
+              <height>491</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <property name="title">
+             <string>물통/배양액</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+            <widget class="QLabel" name="label_3">
+             <property name="geometry">
+              <rect>
+               <x>200</x>
+               <y>60</y>
+               <width>131</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>배양액</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_9">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>60</y>
+               <width>131</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>물통</string>
+             </property>
+            </widget>
+            <widget class="QProgressBar" name="progressBar">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>100</y>
+               <width>141</width>
+               <height>221</height>
+              </rect>
+             </property>
+             <property name="value">
+              <number>50</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+            <widget class="QProgressBar" name="progressBar_2">
+             <property name="geometry">
+              <rect>
+               <x>200</x>
+               <y>100</y>
+               <width>141</width>
+               <height>221</height>
+              </rect>
+             </property>
+             <property name="value">
+              <number>50</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_10">
+             <property name="geometry">
+              <rect>
+               <x>190</x>
+               <y>330</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>현재 수위: 50</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_13">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>330</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>현재 수위: 50</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_14">
+             <property name="geometry">
+              <rect>
+               <x>40</x>
+               <y>433</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(165, 29, 45);</string>
+             </property>
+             <property name="text">
+              <string>경고: 수위 낮음!</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_16">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>390</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: green;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_17">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>393</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+color: rgb(38, 162, 105);</string>
+             </property>
+             <property name="text">
+              <string>수위 정상</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_18">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>430</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: red;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_19">
+             <property name="geometry">
+              <rect>
+               <x>210</x>
+               <y>387</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: green;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_15">
+             <property name="geometry">
+              <rect>
+               <x>230</x>
+               <y>430</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(165, 29, 45);</string>
+             </property>
+             <property name="text">
+              <string>경고: 수위 낮음!</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_20">
+             <property name="geometry">
+              <rect>
+               <x>210</x>
+               <y>390</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+color: rgb(38, 162, 105);</string>
+             </property>
+             <property name="text">
+              <string>수위 정상</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_21">
+             <property name="geometry">
+              <rect>
+               <x>210</x>
+               <y>427</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: red;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_9">
+            <property name="geometry">
+             <rect>
+              <x>290</x>
+              <y>810</y>
+              <width>181</width>
+              <height>101</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>LED1</string>
+            </property>
+            <widget class="QLabel" name="label_32">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: blue;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_33">
+             <property name="geometry">
+              <rect>
+               <x>13</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>on</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_34">
+             <property name="geometry">
+              <rect>
+               <x>93</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>off</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_35">
+             <property name="geometry">
+              <rect>
+               <x>110</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_7">
+            <property name="geometry">
+             <rect>
+              <x>290</x>
+              <y>675</y>
+              <width>181</width>
+              <height>101</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>창문1</string>
+            </property>
+            <widget class="QLabel" name="label_24">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: blue;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_25">
+             <property name="geometry">
+              <rect>
+               <x>13</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>on</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_26">
+             <property name="geometry">
+              <rect>
+               <x>94</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>off</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_27">
+             <property name="geometry">
+              <rect>
+               <x>110</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_6">
+            <property name="geometry">
+             <rect>
+              <x>290</x>
+              <y>540</y>
+              <width>181</width>
+              <height>101</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>팬 1</string>
+            </property>
+            <widget class="QLabel" name="label_22">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: blue;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_23">
+             <property name="geometry">
+              <rect>
+               <x>13</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>on</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_28">
+             <property name="geometry">
+              <rect>
+               <x>94</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>off</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_29">
+             <property name="geometry">
+              <rect>
+               <x>110</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_10">
+            <property name="geometry">
+             <rect>
+              <x>480</x>
+              <y>540</y>
+              <width>181</width>
+              <height>101</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>팬 2</string>
+            </property>
+            <widget class="QLabel" name="label_30">
+             <property name="geometry">
+              <rect>
+               <x>94</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>off</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_31">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: blue;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_36">
+             <property name="geometry">
+              <rect>
+               <x>14</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>on</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_37">
+             <property name="geometry">
+              <rect>
+               <x>110</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_8">
+            <property name="geometry">
+             <rect>
+              <x>480</x>
+              <y>675</y>
+              <width>181</width>
+              <height>101</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>창문2</string>
+            </property>
+            <widget class="QLabel" name="label_38">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: blue;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_39">
+             <property name="geometry">
+              <rect>
+               <x>14</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>on</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_40">
+             <property name="geometry">
+              <rect>
+               <x>94</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>off</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_41">
+             <property name="geometry">
+              <rect>
+               <x>110</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_11">
+            <property name="geometry">
+             <rect>
+              <x>480</x>
+              <y>810</y>
+              <width>181</width>
+              <height>101</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>LED2</string>
+            </property>
+            <widget class="QLabel" name="label_42">
+             <property name="geometry">
+              <rect>
+               <x>30</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: blue;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_43">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>on</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_44">
+             <property name="geometry">
+              <rect>
+               <x>94</x>
+               <y>30</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>off</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_45">
+             <property name="geometry">
+              <rect>
+               <x>110</x>
+               <y>50</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="geometry">
+             <rect>
+              <x>710</x>
+              <y>40</y>
+              <width>481</width>
+              <height>261</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>실시간 내부 온습도</string>
+            </property>
+            <widget class="QLCDNumber" name="lcdNumber">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>80</y>
+               <width>301</width>
+               <height>51</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLCDNumber" name="lcdNumber_2">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>160</y>
+               <width>301</width>
+               <height>51</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_46">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>60</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>내부 온도</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_47">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>140</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>내부 습도</string>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="geometry">
+             <rect>
+              <x>710</x>
+              <y>310</y>
+              <width>481</width>
+              <height>111</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>토양 습도 상태 </string>
+            </property>
+            <widget class="QProgressBar" name="progressBar_3">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>51</y>
+               <width>291</width>
+               <height>23</height>
+              </rect>
+             </property>
+             <property name="value">
+              <number>24</number>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_5">
+            <property name="geometry">
+             <rect>
+              <x>710</x>
+              <y>440</y>
+              <width>481</width>
+              <height>471</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>실시간 내부 온습도 시간 변화 그래프</string>
+            </property>
+            <widget class="QLabel" name="label_48">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>40</y>
+               <width>371</width>
+               <height>431</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="pixmap">
+              <pixmap>../../.designer/backup/Pictures/Screenshots/Screenshot from 2024-11-07 23-11-42.png</pixmap>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="geometry">
+             <rect>
+              <x>1240</x>
+              <y>40</y>
+              <width>561</width>
+              <height>381</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>카메라</string>
+            </property>
+            <widget class="QLabel" name="image_label">
+             <property name="geometry">
+              <rect>
+               <x>6</x>
+               <y>26</y>
+               <width>551</width>
+               <height>351</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_14">
+            <property name="geometry">
+             <rect>
+              <x>1240</x>
+              <y>440</y>
+              <width>561</width>
+              <height>471</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>쿨링/히팅 단계</string>
+            </property>
+            <widget class="QPushButton" name="pushButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>160</x>
+               <y>160</y>
+               <width>71</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>1단계</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>270</x>
+               <y>160</y>
+               <width>71</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>2단계</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>380</x>
+               <y>160</y>
+               <width>81</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>3단계</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_4">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>270</x>
+               <y>330</y>
+               <width>71</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>2단계</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_5">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>160</x>
+               <y>330</y>
+               <width>71</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>1단계</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_6">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>380</x>
+               <y>330</y>
+               <width>81</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>3단계</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_49">
+             <property name="geometry">
+              <rect>
+               <x>70</x>
+               <y>110</y>
+               <width>101</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>쿨링</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_50">
+             <property name="geometry">
+              <rect>
+               <x>70</x>
+               <y>280</y>
+               <width>101</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>히팅</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_53">
+             <property name="geometry">
+              <rect>
+               <x>330</x>
+               <y>90</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>off</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_51">
+             <property name="geometry">
+              <rect>
+               <x>240</x>
+               <y>110</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: blue;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_52">
+             <property name="geometry">
+              <rect>
+               <x>220</x>
+               <y>90</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>on</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_54">
+             <property name="geometry">
+              <rect>
+               <x>350</x>
+               <y>110</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_55">
+             <property name="geometry">
+              <rect>
+               <x>330</x>
+               <y>260</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>off</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_56">
+             <property name="geometry">
+              <rect>
+               <x>240</x>
+               <y>280</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_57">
+             <property name="geometry">
+              <rect>
+               <x>220</x>
+               <y>260</y>
+               <width>67</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>on</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_58">
+             <property name="geometry">
+              <rect>
+               <x>350</x>
+               <y>280</y>
+               <width>31</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: blue;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_7">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>30</y>
+               <width>71</width>
+               <height>61</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>자동</string>
+             </property>
+            </widget>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="page_2">
+           <widget class="QLabel" name="label_4">
+            <property name="geometry">
+             <rect>
+              <x>190</x>
+              <y>80</y>
+              <width>921</width>
+              <height>541</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(246, 211, 45);</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="page_3">
+           <widget class="QLabel" name="label_5">
+            <property name="geometry">
+             <rect>
+              <x>190</x>
+              <y>70</y>
+              <width>781</width>
+              <height>551</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(165, 29, 45);</string>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="page_4">
+           <property name="styleSheet">
+            <string notr="true">#page_4 {
+    border-image: url(/home/jieun/ws/FarmAI/icons/loginbackground.jpg);
+	}
+</string>
+           </property>
+           <widget class="QWidget" name="widget" native="true">
+            <property name="geometry">
+             <rect>
+              <x>550</x>
+              <y>140</y>
+              <width>911</width>
+              <height>631</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">* {
+    border: none;
+    background-color: transparent;
+    background: none;
+    padding: 0;
+    margin: 0;
+	color: rgb(255, 255, 255);
+}
+
+#widget {
+    background-color: #588460;
+    border-radius: 10px;
+}
+
+QLabel {
+    color: rgb(0, 0, 0);
+    background-color: transparent;
+}
+
+QLineEdit{
+	color: rgb(0, 0, 0);
+}
+</string>
+            </property>
+            <widget class="QLabel" name="label_6">
+             <property name="geometry">
+              <rect>
+               <x>400</x>
+               <y>110</y>
+               <width>201</width>
+               <height>81</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>36</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgba(191, 64, 64, 0);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>FarmAI</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_login">
+             <property name="geometry">
+              <rect>
+               <x>370</x>
+               <y>410</y>
+               <width>241</width>
+               <height>71</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    background-color: #E6E47C;        /* 버튼 배경색 */
+    border: 2px solid #387038;        /* 테두리 색과 두께 */
+    border-radius: 10px;              /* 모서리를 둥글게 */
+    padding: 5px 15px;                /* 버튼의 패딩 */
+    color: black;                     /* 글자 색상 */
+    font-weight: bold;                /* 글자 굵기 */
+}
+
+/* 버튼을 누를 때 스타일 */
+QPushButton:pressed {
+    background-color: #8FBD99;        /* 눌렀을 때 배경색 */
+    padding-top: 6px;                 /* 약간 아래로 눌리는 효과 */
+    padding-left: 6px;                /* 눌렸을 때 살짝 오른쪽으로 밀리는 효과 */
+}</string>
+             </property>
+             <property name="text">
+              <string>로그인</string>
+             </property>
+             <property name="flat">
+              <bool>false</bool>
+             </property>
+            </widget>
+            <widget class="QWidget" name="layoutWidget">
+             <property name="geometry">
+              <rect>
+               <x>220</x>
+               <y>240</y>
+               <width>391</width>
+               <height>154</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QLabel" name="label_7">
+                  <property name="font">
+                   <font>
+                    <pointsize>16</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>아이디</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>38</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEdit_id">
+                  <property name="minimumSize">
+                   <size>
+                    <width>240</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
+                <item>
+                 <widget class="QLabel" name="label_8">
+                  <property name="font">
+                   <font>
+                    <pointsize>16</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>비밀번호</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEdit_password">
+                  <property name="minimumSize">
+                   <size>
+                    <width>240</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                  <property name="echoMode">
+                   <enum>QLineEdit::Password</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="page_5">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <widget class="QWidget" name="widget_2" native="true">
+            <property name="geometry">
+             <rect>
+              <x>550</x>
+              <y>148</y>
+              <width>911</width>
+              <height>631</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">
+QWidget {
+    background-color: rgb(88, 132, 96);
+}
+
+
+#widget_2 {
+    border-radius: 10px;       /* 모서리를 10px만큼 둥글게 설정 */
+}
+
+</string>
+            </property>
+            <widget class="QPushButton" name="deleteBtn">
+             <property name="geometry">
+              <rect>
+               <x>700</x>
+               <y>178</y>
+               <width>131</width>
+               <height>50</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    background-color: #E6E47C;        /* 버튼 배경색 */
+    border: 2px solid #387038;        /* 테두리 색과 두께 */
+    border-radius: 10px;              /* 모서리를 둥글게 */
+    padding: 5px 15px;                /* 버튼의 패딩 */
+    color: black;                     /* 글자 색상 */
+    font-weight: bold;                /* 글자 굵기 */
+}
+
+/* 버튼을 누를 때 스타일 */
+QPushButton:pressed {
+    background-color: #8FBD99;        /* 눌렀을 때 배경색 */
+    padding-top: 6px;                 /* 약간 아래로 눌리는 효과 */
+    padding-left: 6px;                /* 눌렸을 때 살짝 오른쪽으로 밀리는 효과 */
+}</string>
+             </property>
+             <property name="text">
+              <string>삭제</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="updateBtn">
+             <property name="geometry">
+              <rect>
+               <x>550</x>
+               <y>178</y>
+               <width>131</width>
+               <height>50</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    background-color: #E6E47C;        /* 버튼 배경색 */
+    border: 2px solid #387038;        /* 테두리 색과 두께 */
+    border-radius: 10px;              /* 모서리를 둥글게 */
+    padding: 5px 15px;                /* 버튼의 패딩 */
+    color: black;                     /* 글자 색상 */
+    font-weight: bold;                /* 글자 굵기 */
+}
+
+/* 버튼을 누를 때 스타일 */
+QPushButton:pressed {
+    background-color: #8FBD99;        /* 눌렀을 때 배경색 */
+    padding-top: 6px;                 /* 약간 아래로 눌리는 효과 */
+    padding-left: 6px;                /* 눌렸을 때 살짝 오른쪽으로 밀리는 효과 */
+}</string>
+             </property>
+             <property name="text">
+              <string>수정</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="loadBtn">
+             <property name="geometry">
+              <rect>
+               <x>550</x>
+               <y>107</y>
+               <width>131</width>
+               <height>50</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    background-color: #E6E47C;        /* 버튼 배경색 */
+    border: 2px solid #387038;        /* 테두리 색과 두께 */
+    border-radius: 10px;              /* 모서리를 둥글게 */
+    padding: 5px 15px;                /* 버튼의 패딩 */
+    color: black;                     /* 글자 색상 */
+    font-weight: bold;                /* 글자 굵기 */
+}
+
+/* 버튼을 누를 때 스타일 */
+QPushButton:pressed {
+    background-color: #8FBD99;        /* 눌렀을 때 배경색 */
+    padding-top: 6px;                 /* 약간 아래로 눌리는 효과 */
+    padding-left: 6px;                /* 눌렸을 때 살짝 오른쪽으로 밀리는 효과 */
+}</string>
+             </property>
+             <property name="text">
+              <string>불러오기</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="addBtn">
+             <property name="geometry">
+              <rect>
+               <x>700</x>
+               <y>107</y>
+               <width>131</width>
+               <height>50</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    background-color: #E6E47C;        /* 버튼 배경색 */
+    border: 2px solid #387038;        /* 테두리 색과 두께 */
+    border-radius: 10px;              /* 모서리를 둥글게 */
+    padding: 5px 15px;                /* 버튼의 패딩 */
+    color: black;                     /* 글자 색상 */
+    font-weight: bold;                /* 글자 굵기 */
+}
+
+/* 버튼을 누를 때 스타일 */
+QPushButton:pressed {
+    background-color: #8FBD99;        /* 눌렀을 때 배경색 */
+    padding-top: 6px;                 /* 약간 아래로 눌리는 효과 */
+    padding-left: 6px;                /* 눌렸을 때 살짝 오른쪽으로 밀리는 효과 */
+}</string>
+             </property>
+             <property name="text">
+              <string>추가</string>
+             </property>
+            </widget>
+            <widget class="QTableWidget" name="tableWidget">
+             <property name="geometry">
+              <rect>
+               <x>110</x>
+               <y>270</y>
+               <width>721</width>
+               <height>301</height>
+              </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+             </property>
+             <column>
+              <property name="text">
+               <string>아이디</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>비밀번호</string>
+              </property>
+             </column>
+            </widget>
+            <widget class="QWidget" name="layoutWidget">
+             <property name="geometry">
+              <rect>
+               <x>111</x>
+               <y>110</y>
+               <width>374</width>
+               <height>116</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_8">
+                <item>
+                 <widget class="QLabel" name="label_11">
+                  <property name="font">
+                   <font>
+                    <pointsize>16</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: rgb(0, 0, 0);</string>
+                  </property>
+                  <property name="text">
+                   <string>아이디</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_4">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>38</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="id_input">
+                  <property name="minimumSize">
+                   <size>
+                    <width>240</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>18</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_9">
+                <item>
+                 <widget class="QLabel" name="label_12">
+                  <property name="font">
+                   <font>
+                    <pointsize>16</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: rgb(0, 0, 0);</string>
+                  </property>
+                  <property name="text">
+                   <string>비밀번호</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="pw_input">
+                  <property name="minimumSize">
+                   <size>
+                    <width>240</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="echoMode">
+                   <enum>QLineEdit::Normal</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </widget>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources>
+  <include location="icons/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
