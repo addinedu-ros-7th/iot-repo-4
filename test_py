@@ -5,7 +5,7 @@ import sys
 import pymysql
 import sys
 import time
-import LEE_class
+import use_table
 
 # PyQt
 from PyQt5.QtWidgets import *
@@ -38,10 +38,15 @@ import numpy as np
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # 상위 디렉토리의 경로
-parent_dir = os.path.join(current_dir, 'AI')
+parent_dir_AI = os.path.join(current_dir, 'AI')
+parent_dir_GUI_AND_SYSTEM = os.path.join(current_dir, 'gui_and_system')
+
 
 # 상위 디렉토리를 sys.path에 추가
-sys.path.append(os.path.abspath(parent_dir))
+sys.path.append(os.path.abspath(parent_dir_AI))
+sys.path.append(os.path.abspath(parent_dir_GUI_AND_SYSTEM))
+
+
 
 
 # GUI Theme
