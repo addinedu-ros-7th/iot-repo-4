@@ -1,12 +1,161 @@
 import sys
+import os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView
-from PyQt5.QtCore import QPropertyAnimation, QEasingCurve
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, Qt, QThread, pyqtSignal
 from PyQt5 import uic
+import cv2
+import torch
+import numpy as np
 import pymysql
 from use_table import UserTable, SmartFarmTable
 import resources_rc  # 리소스 파일 import
 
+# 현재 스크립트의 디렉토리 경로
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# 상위 디렉토리의 경로
+parent_dir = os.path.join(current_dir, '..', 'AI')
+
+# 상위 디렉토리를 sys.path에 추가
+sys.path.append(os.path.abspath(parent_dir))
+
+import detect_1  # 수정된 detect_1.py 파일 가져오기 (객체 검출 기능을 구현한 모듈)
+
 from_class = uic.loadUiType("interface01.ui")[0]
+
+
+class DetectionThread(QThread):
+    image_update = pyqtSignal(QImage)
+
+    def __init__(self):
+        super().__init__()
+        # 객체 검출 옵션 설정 및 모델 초기화
+        self.opt = detect_1.parse_opt()
+        self.opt.weights = '../AI/best.pt'
+        self.opt.source = 0
+        self.opt.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.opt.imgsz = (480, 480)
+        self.opt.conf_thres = 0.25
+        self.opt.iou_thres = 0.45
+        self.opt.classes = None
+        self.opt.agnostic_nms = False
+        self.opt.half = False
+
+        # 모델 초기화
+        self.model = detect_1.DetectMultiBackend(
+            self.opt.weights,
+            device=self.opt.device,
+            dnn=self.opt.dnn,
+            data=self.opt.data,
+            fp16=self.opt.half
+        )
+        self.stride = self.model.stride
+        self.names = self.model.names
+        self.imgsz = detect_1.check_img_size(self.opt.imgsz, s=self.stride)
+
+        # 웹캠 열기
+        self.cap = cv2.VideoCapture(self.opt.source)
+        self.is_running = True
+
+    def run(self):
+        while self.is_running:
+            ret, frame = self.cap.read()  # 프레임 읽기
+            if ret:
+                # 프레임에 대해 객체 검출 수행
+                results = self.detect_frame(frame)
+
+                # 결과에서 검출된 이미지와 정보 가져오기
+                if results:
+                    result = results[0]  # 첫 번째 프레임 결과 사용
+                    im0 = result['image']
+                    detections = result['detections']  # 검출된 객체 정보
+
+                    # 검출된 객체 정보를 배열 형태로 출력 (필요에 따라 사용)
+                    # self.detection_array = []
+                    # for detection in detections:
+                    #     self.detection_array.append({
+                    #         'bbox': detection['bbox'],
+                    #         'confidence': detection['confidence'],
+                    #         'class': detection['class'],
+                    #         'label': detection['label']
+                    #     })
+
+                    # OpenCV 이미지를 PyQt 이미지로 변환하여 시그널로 전달
+                    im0 = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)  # BGR을 RGB로 변환
+                    h, w, ch = im0.shape  # 이미지의 높이, 너비, 채널 정보
+                    bytes_per_line = ch * w  # 한 줄당 바이트 수 계산
+                    qt_image = QImage(im0.data, w, h, bytes_per_line, QImage.Format_RGB888)  # PyQt 이미지 생성
+                    scaled_image = qt_image.scaled(640, 480, Qt.KeepAspectRatio)
+                    self.image_update.emit(scaled_image)
+            else:
+                break
+
+    def stop(self):
+        self.is_running = False
+        self.cap.release()
+        self.quit()
+
+    # 한 프레임에서 객체 검출 수행 메서드
+    def detect_frame(self, frame):
+        # 이미지 전처리
+        img = cv2.resize(frame, self.imgsz)  # 입력 프레임 크기를 모델에 맞게 조정
+        img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR -> RGB, HWC -> CHW 형식 변환
+        img = np.ascontiguousarray(img)  # 배열을 연속된 메모리 배열로 만듦
+
+        # 텐서 변환
+        im = torch.from_numpy(img).to(self.opt.device)  # NumPy 배열을 텐서로 변환하고, 디바이스에 로드
+        im = im.half() if self.opt.half else im.float()  # 8비트 -> FP16/32 형식 변환
+        im /= 255  # 0 - 255를 0.0 - 1.0 범위로 정규화
+        if len(im.shape) == 3:
+            im = im[None]  # 배치 차원 추가
+
+        # 모델을 통한 추론
+        pred = self.model(im, augment=self.opt.augment, visualize=self.opt.visualize)
+
+        # NMS(Non-Max Suppression) 적용
+        pred = detect_1.non_max_suppression(
+            pred,
+            self.opt.conf_thres,
+            self.opt.iou_thres,
+            self.opt.classes,
+            self.opt.agnostic_nms,
+            max_det=self.opt.max_det
+        )
+
+        # 검출 결과 처리
+        im0 = frame.copy()  # 원본 프레임 복사
+        results = []
+        for i, det in enumerate(pred):  # 이미지별로 결과 처리
+            annotator = detect_1.Annotator(im0, line_width=self.opt.line_thickness, example=str(self.names))  # 박스 라벨링 도구
+            detections = []
+            if len(det):
+                # 검출된 객체 박스 크기 조정
+                det[:, :4] = detect_1.scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
+
+                # 객체 정보 수집
+                for *xyxy, conf, cls in reversed(det):
+                    if self.opt.hide_labels:
+                        label = None
+                    else:
+                        label = f'{self.names[int(cls)]} {conf:.2f}' if not self.opt.hide_conf else f'{self.names[int(cls)]}'
+
+                    annotator.box_label(xyxy, label, color=detect_1.colors(int(cls), True))  # 박스와 라벨 추가
+                    detection = {
+                        'bbox': [int(coord.item()) for coord in xyxy],  # 객체 박스 좌표
+                        'confidence': float(conf.item()),  # 신뢰도
+                        'class': int(cls.item()),  # 클래스 ID
+                        'label': self.names[int(cls.item())]  # 클래스 이름
+                    }
+                    detections.append(detection)
+
+            im0 = annotator.result()  # 주석 추가된 이미지 결과 얻기
+            results.append({
+                'image': im0,
+                'detections': detections
+            })
+
+        return results
 
 
 class WindowClass(QMainWindow, from_class):
@@ -17,7 +166,7 @@ class WindowClass(QMainWindow, from_class):
 
         # 스타일시트를 사용하여 배경을 투명하게 설정
         self.leftMenuSubContainer.setStyleSheet("background-color: transparent;")
-        #self.SettingsBtn.setStyleSheet("background-color: transparent;")  # "관리자" 버튼 배경도 투명하게 설정
+        # self.SettingsBtn.setStyleSheet("background-color: transparent;")  # "관리자" 버튼 배경도 투명하게 설정
 
         # UserTable 인스턴스 생성
         self.user_table = UserTable()
@@ -67,6 +216,20 @@ class WindowClass(QMainWindow, from_class):
 
         # 현재 활성화된 버튼을 추적하기 위한 변수
         self.currentActiveButton = None
+
+        # 객체 검출 스레드 생성 및 시그널 연결
+        self.detection_thread = DetectionThread()
+        self.detection_thread.image_update.connect(self.update_image)
+        self.detection_thread.start()
+
+    def closeEvent(self, event):
+        # 스레드 정지 및 자원 해제
+        self.detection_thread.stop()
+        event.accept()
+
+    def update_image(self, qt_image):
+        # 이미지 레이블에 업데이트
+        self.image_label.setPixmap(QPixmap.fromImage(qt_image))
 
     def toggleMenu(self):
         target_width = 50 if self.menuExpanded else 150
@@ -185,7 +348,7 @@ class WindowClass(QMainWindow, from_class):
         msg.setWindowTitle("수정 성공")
         msg.setText(f"{user_id}의 비밀번호가 수정되었습니다.")
         msg.exec_()
-        
+
         self.load_data()  # 새로고침
 
     def delete_user(self):
@@ -198,7 +361,7 @@ class WindowClass(QMainWindow, from_class):
         msg.setWindowTitle("삭제 성공")
         msg.setText(f"{user_id}가 삭제되었습니다.")
         msg.exec_()
-        
+
         self.load_data()  # 새로고침
 
     def load_selected_user(self, row, column):
@@ -207,9 +370,12 @@ class WindowClass(QMainWindow, from_class):
         self.id_input.setText(selected_id)
         self.pw_input.setText(selected_pw)
 
+
 if __name__ == "__main__":
+    # OpenCV의 Qt 플러그인 경로 제거 (충돌 방지)
+    os.environ.pop("QT_PLUGIN_PATH", None)
+
     app = QApplication(sys.argv)
     myWindow = WindowClass()
     myWindow.show()
     sys.exit(app.exec_())
-
