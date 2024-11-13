@@ -168,6 +168,32 @@ class UserTable():
             return True
         return False
     
+    def load_data(self):
+        # 유저데이터를 불러옵니다.
+        # 관리자 화면에 디스플레이용도
+        self.cursor.execute("SELECT * FROM USER")
+        return self.cursor.fetchall()
+
+    def append_user(self, id, pw):
+        #유저 데이터를 추가합니다.
+        try:
+            self.cursor.execute("INSERT INTO USER (ID, PW) VALUES (%s, %s)", (id, pw))
+            self.conn.commit()
+            return True
+        except pymysql.IntegrityError:
+            return False
+
+    def update_user(self, id, pw):
+        #유저 데이터를 수정합니다.
+        self.cursor.execute("UPDATE USER SET PW = %s WHERE ID = %s", (pw, id))
+        self.conn.commit()
+
+    def delete_user(self, id):
+        #유저를 삭제합니다.
+        self.cursor.execute("DELETE FROM USER WHERE ID = %s", (id,))
+        self.conn.commit()
+
+
     def disconnect(self):
         # 데이터베이스 연결을 닫습니다.
         # 사용 후 자원을 해제하기 위해 호출되어야 합니다.
@@ -175,7 +201,7 @@ class UserTable():
         self.conn.close()
 
 
-
+"""
 # 테스트 코드 예제
 if __name__ == "__main__":
     # SmartFarmTable 클래스 테스트
@@ -212,3 +238,4 @@ if __name__ == "__main__":
     
     # 연결 해제
     user_table.disconnect()
+"""

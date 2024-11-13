@@ -1,15 +1,23 @@
 import sys
 import os
+
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, Qt, QThread, pyqtSignal
+from PyQt5.QtCore import QPropertyAnimation, QEasingCurve, Qt, QThread, pyqtSignal, QTimer
 from PyQt5 import uic
+import PyQt5.QtCore as QtCore
+
+
 import cv2
 import torch
 import numpy as np
-import pymysql
+import serial  # serial 모듈 import
+from serial.tools import list_ports
 from use_table import UserTable, SmartFarmTable
 import resources_rc  # 리소스 파일 import
+
+
 
 # 현재 스크립트의 디렉토리 경로
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -22,7 +30,20 @@ sys.path.append(os.path.abspath(parent_dir))
 
 import detect_1  # 수정된 detect_1.py 파일 가져오기 (객체 검출 기능을 구현한 모듈)
 
+
+
+# ui 파일 임포트
 from_class = uic.loadUiType("interface01.ui")[0]
+
+
+
+
+ports = list_ports.comports() # 포트 자동인식
+portlist = []
+for port in ports:
+    portlist.append(str(port))
+main_usd_port = portlist[-1].split(' ')[0]
+
 
 
 class DetectionThread(QThread):
@@ -163,6 +184,17 @@ class WindowClass(QMainWindow, from_class):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("FarmAI")
+
+        self.arduinoData1 = serial.Serial('/dev/ttyACM0', 9600)
+        #self.arduinoData2 = serial.Serial('/dev/ttyACM1', 9600)
+
+
+        # 업데이트 주기
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.update_plot )
+        self.timer.start(50)
+
+
 
         # 스타일시트를 사용하여 배경을 투명하게 설정
         self.leftMenuSubContainer.setStyleSheet("background-color: transparent;")
@@ -369,6 +401,72 @@ class WindowClass(QMainWindow, from_class):
         selected_pw = self.tableWidget.item(row, 1).text()
         self.id_input.setText(selected_id)
         self.pw_input.setText(selected_pw)
+
+
+
+################################################################################################################
+
+
+
+    def update_plot(self):
+            
+        if self.arduinoData1.in_waiting > 0:
+
+            data2 = self.arduinoData1.readline().decode("utf-8").strip()
+            
+            try :
+                if "Security: " in data2 :
+                    print(data2[-1:])
+                    if
+            except (ValueError, IndexError):
+                print("data error")
+
+        #if self.arduinoData2.in_waiting > 0:
+            #data = self.arduinoData2.readline().decode('utf-8').strip()
+            """
+            #아두이노 1 처리
+            try:
+                # 데이터 읽어오기
+                if "Temperature:" in data and "Humidity:" in data and 'Water Level' in data:
+                    temperature_str = data.split("Temperature:")[1].split("\n")[0].strip()
+                    humidity_str = data.split("Humidity:")[1].split("\n")[0].strip()
+                    waterlevel_str = data.split("Water Level:")[1].split("\n")[0].strip()
+                    temperature = int(temperature_str) # float??
+                    humidity = int(humidity_str) # float??
+                    mapped_waterlevel = self.map_water_level(int(waterlevel_str))
+
+                    
+                    self.temperature_data = np.roll(self.temperature_data, -1) # 마지막 값 자리 비우기 (옆으로 밀기)
+                    self.temperature_data[-1] = temperature # 마지막 값 업데이트
+                    self.humidity_data = np.roll(self.humidity_data, -1)
+                    self.humidity_data[-1] = humidity
+
+                    self.le_temperature.setText(f"{temperature_str} °C")
+                    self.le_humidity.setText(f"{humidity_str} %")
+                    self.le_waterlevel.setText(f"{mapped_waterlevel} %")
+                    
+                    self.pbar_waterlevel.setValue()
+                    # 그래프 라인 업데이트
+                    self.temperaturePlotLine.setData(self.x, self.temperature_data)
+                    self.HumidityPlotLine.setData(self.x, self.humidity_data)
+                    
+
+            except (ValueError, IndexError):
+                print("Data format error:", data)
+            # SmartFarmTable.InsertDataIntoDB().append( , , , , , , , )
+                """
+
+
+                
+
+    def closeEvent(self, event):
+        self.arduinoData.close()
+        self.cap.release()
+        event.accept()
+
+    def map_water_level(value):
+        mapped_value = ((value - 0) * (100 - 50) / (1023 - 0)) + 50
+        return mapped_value
 
 
 if __name__ == "__main__":

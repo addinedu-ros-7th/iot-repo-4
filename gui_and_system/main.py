@@ -21,7 +21,7 @@ class UserTable():
         self.init()
 
     def init(self):
-        self.conn = pymysql.connect(host='localhost', user='root', password='0819', charset='utf8')
+        self.conn = pymysql.connect(host='localhost', user='root', password='whdgh29k05', charset='utf8')
         self.cursor = self.conn.cursor()
 
         self.cursor.execute("CREATE DATABASE IF NOT EXISTS smart_farm;")
