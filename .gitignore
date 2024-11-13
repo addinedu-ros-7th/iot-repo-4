@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-resources_rc
+resources_rc.py
 *.pt
 
 # Distribution / packaging
