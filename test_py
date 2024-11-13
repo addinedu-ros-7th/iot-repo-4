@@ -1,0 +1,149 @@
+import numpy as np
+import pandas as pd
+import cv2
+import sys
+import pymysql
+import sys
+import time
+import use_table
+
+# PyQt
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5 import uic
+from pyqtgraph.Qt import QtCore
+import pyqtgraph as pg
+
+# Arduino Serial Communication
+import serial
+from serial import SerialException
+import serial.tools
+from serial.tools import list_ports
+
+
+# 필수 모듈 import
+import sys
+import os
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5 import uic
+from PyQt5.QtCore import Qt
+import cv2
+import torch
+import numpy as np
+
+
+# 현재 스크립트의 디렉토리 경로
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# 상위 디렉토리의 경로
+parent_dir_AI = os.path.join(current_dir, 'AI')
+parent_dir_GUI_AND_SYSTEM = os.path.join(current_dir, 'gui_and_system')
+
+
+# 상위 디렉토리를 sys.path에 추가
+sys.path.append(os.path.abspath(parent_dir_AI))
+sys.path.append(os.path.abspath(parent_dir_GUI_AND_SYSTEM))
+
+
+
+
+# GUI Theme
+# import qdarktheme
+
+# PyGt Desinger File
+form_class = uic.loadUiType("test.ui")[0]
+
+# 포트 자동 인식
+ports = serial.tools.list_ports.comports()
+portlist = []
+for port in ports:
+    portlist.append(str(port))
+main_usd_port = portlist[-1].split(' ')[0]
+
+# Main Window
+class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
+    def __init__(self): 
+        super(SunnyMainWindow, self).__init__()
+        self.setupUi(self)
+
+        self.arduinoData = serial.Serial('/dev/ttyACM0', 9600) # TinkerCAD serial 가능?
+
+            # SET ATTRIBUTE PROPERTY
+
+        # 그래프가 들어가 attribute 생성
+        self.humidity_canvas = pg.GraphicsLayoutWidget()
+        # PyQt에서 만든 attribute에 삽입
+        self.wdg_humidity.setLayout(QVBoxLayout())
+        self.wdg_humidity.layout().addWidget(self.humidity_canvas)
+
+        self.temperature_canvas = pg.GraphicsLayoutWidget()             
+        self.wdg_temperature.setLayout(QVBoxLayout())
+        self.wdg_temperature.layout().addWidget(self.temperature_canvas)
+
+        self.HumidityPlot = self.humidity_canvas.addPlot()
+        self.HumidityPlot.setXRange(0,20)
+        self.HumidityPlot.setYRange(0,100)
+        self.HumidityPlotLine = self.HumidityPlot.plot(pen= 'b') # 그래프라인만 따로 update 되기 떄문에
+
+        self.temperaturePlot = self.temperature_canvas.addPlot()
+        self.temperaturePlot.setXRange(0,20)
+        self.temperaturePlot.setYRange(0,30)
+        self.temperaturePlotLine = self.temperaturePlot.plot(pen= 'g') # 그래프라인만 따로 update 되기 떄문에
+
+        self.x = np.arange(20)  # x range 20으로 고정
+        self.temperature_data = np.zeros(20) # array로 저장
+        self.humidity_data = np.zeros(20)
+
+        # 업데이트 주기
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.update_plot)
+        self.timer.start(50)
+
+    #DeepLearing
+
+    # GUI Graph Plot 
+    def update_plot(self):
+            if self.arduinoData.in_waiting > 0:
+                data = self.arduinoData.readline().decode('utf-8').strip()
+                try:
+                    # 데이터 읽어오기
+                    if "Temperature:" in data and "Humidity:" in data and 'Water Level' in data:
+                        temperature_str = data.split("Temperature:")[1].split(",")[0].strip()
+                        humidity_str = data.split("Humidity:")[1].split(",")[0].strip()
+                        waterlevel_str = data.split("Water Level:")[1].split(",")[0].strip()
+
+                        temperature = int(temperature_str) # float??
+                        humidity = int(humidity_str) # float??
+                        waterlevel = int(waterlevel_str)
+                        mapped_waterlevel = int(((waterlevel - 0) * (100 - 50) / (1023 - 0)) + 50)
+
+                        self.temperature_data = np.roll(self.temperature_data, -1) # 마지막 값 자리 비우기 (옆으로 밀기)
+                        self.temperature_data[-1] = temperature # 마지막 값 업데이트
+                        self.humidity_data = np.roll(self.humidity_data, -1)
+                        self.humidity_data[-1] = humidity
+
+                        self.le_temperature.setText(f"{temperature_str} °C")
+                        self.le_humidity.setText(f"{humidity_str} %")
+                        self.le_waterlevel.setText(f"{mapped_waterlevel} %")
+                        
+                        self.pbar_waterlevel.setValue(mapped_waterlevel)
+                        # 그래프 라인 업데이트
+                        self.temperaturePlotLine.setData(self.x, self.temperature_data)
+                        self.HumidityPlotLine.setData(self.x, self.humidity_data)
+                except (ValueError, IndexError):
+                    print("Data format error:", data)
+            # LEE_class.InsertDataIntoDB().append( , , , , , , , )
+
+    def closeEvent(self, event):
+        self.arduinoData.close()
+        self.cap.release()
+        event.accept()
+    
+if __name__ == '__main__':
+    App = QApplication(sys. argv)
+    # set_theme(App, theme='dark')
+    myWindow = SunnyMainWindow()
+    myWindow.show()
+    sys.exit(App.exec())
