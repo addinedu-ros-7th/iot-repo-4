@@ -5,7 +5,6 @@ import sys
 import pymysql
 import sys
 import time
-import use_table
 
 # PyQt
 from PyQt5.QtWidgets import *
@@ -30,21 +29,20 @@ from PyQt5.QtGui import *
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import cv2
-import torch
+# import torch
 import numpy as np
 
 
 # 현재 스크립트의 디렉토리 경로
 current_dir = os.path.dirname(os.path.abspath(__file__))
-
 # 상위 디렉토리의 경로
 parent_dir_AI = os.path.join(current_dir, 'AI')
 parent_dir_GUI_AND_SYSTEM = os.path.join(current_dir, 'gui_and_system')
-
-
 # 상위 디렉토리를 sys.path에 추가
 sys.path.append(os.path.abspath(parent_dir_AI))
 sys.path.append(os.path.abspath(parent_dir_GUI_AND_SYSTEM))
+
+import use_table
 
 
 
@@ -68,7 +66,7 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
         super(SunnyMainWindow, self).__init__()
         self.setupUi(self)
 
-        self.arduinoData = serial.Serial('/dev/ttyACM0', 9600) # TinkerCAD serial 가능?
+        self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
 
             # SET ATTRIBUTE PROPERTY
 
@@ -134,7 +132,6 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
                         self.HumidityPlotLine.setData(self.x, self.humidity_data)
                 except (ValueError, IndexError):
                     print("Data format error:", data)
-            # LEE_class.InsertDataIntoDB().append( , , , , , , , )
 
     def closeEvent(self, event):
         self.arduinoData.close()
