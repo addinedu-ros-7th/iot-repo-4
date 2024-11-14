@@ -32,6 +32,9 @@ import cv2
 # import torch
 import numpy as np
 
+import os
+os.environ["QT_LOGGING_RULES"] = "*.debug=false"
+
 
 # 현재 스크립트의 디렉토리 경로
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -65,8 +68,16 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
         self.setupUi(self)
 
         self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
-
+        
             # SET ATTRIBUTE PROPERTY
+        # Arduino connection status 
+        self.le_connection_status.setText("Connecting to Arduino...")
+        try:
+            self.arduinoData = serial.Serial(main_usd_port, 9600)
+            self.le_connection_status.setText("Connected to Arduino")
+        except SerialException:
+            self.le_connection_status.setText("Arduino connection failed")
+            print("Failed to connect to Arduino")
 
         # 그래프가 들어가 attribute 생성
         self.humidity_canvas = pg.GraphicsLayoutWidget()
@@ -98,10 +109,20 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
         self.waterlevel_str = "0"
         self.nutritionwaterlevel_str = "0"
 
+        self.temperature = 0
+        self.humidity = 0
+        self.soilhumidity = 0
+        self.waterlevel = 0
+        self.nutritionwaterlevel = 0
+        self.mapped_waterlevel = 0
+        self.mapped_nutritionwaterlevel = 0
+
+
         # 업데이트 주기
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_plot)
-        self.timer.start(500)
+        self.timer.start(2000)
+
 
 
     #DeepLearing

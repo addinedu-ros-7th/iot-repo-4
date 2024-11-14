@@ -67,7 +67,7 @@ void loop() {
 
   Serial.println();
 
-  delay(100);
+  delay(2000);
 
   // AUTOMATION SETUP 
   if (Serial.available() > 0) { // Writeread()
