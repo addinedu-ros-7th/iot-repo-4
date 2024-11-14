@@ -107,15 +107,20 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
                 data = self.arduinoData.readline().decode('utf-8').strip()
                 try:
                     # 데이터 읽어오기
-                    if "Temperature:" in data and "Humidity:" in data and 'Water Level' in data:
+                    if "Temperature:" in data and "Humidity:" in data and 'Water Level:' in data and 'Nutrition Water Level:' in data:
                         temperature_str = data.split("Temperature:")[1].split(",")[0].strip()
                         humidity_str = data.split("Humidity:")[1].split(",")[0].strip()
                         waterlevel_str = data.split("Water Level:")[1].split(",")[0].strip()
+                        nutritionwaterlevel_str = data.split("Nutrition Water Level:")[1].split(",")[0].strip()
+
 
                         temperature = int(temperature_str) # float??
                         humidity = int(humidity_str) # float??
                         waterlevel = int(waterlevel_str)
                         mapped_waterlevel = int(((waterlevel - 0) * (100 - 50) / (1023 - 0)) + 50)
+                        nutritionwaterlevel = int(nutritionwaterlevel_str)
+                        mapped_nutritionwaterlevel = int(((nutritionwaterlevel - 0) * (100 - 50) / (1023 - 0)) + 50)
+
 
                         self.temperature_data = np.roll(self.temperature_data, -1) # 마지막 값 자리 비우기 (옆으로 밀기)
                         self.temperature_data[-1] = temperature # 마지막 값 업데이트
@@ -125,8 +130,11 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
                         self.le_temperature.setText(f"{temperature_str} °C")
                         self.le_humidity.setText(f"{humidity_str} %")
                         self.le_waterlevel.setText(f"{mapped_waterlevel} %")
-                        
+                        self.le_nutwaterlevel.setText(f"{mapped_nutritionwaterlevel} %")
+
                         self.pbar_waterlevel.setValue(mapped_waterlevel)
+                        self.pbar_nutwaterlevel.setValue(mapped_nutritionwaterlevel)
+
                         # 그래프 라인 업데이트
                         self.temperaturePlotLine.setData(self.x, self.temperature_data)
                         self.HumidityPlotLine.setData(self.x, self.humidity_data)
