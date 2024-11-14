@@ -21,11 +21,13 @@ const int G = A0;
 
 // SUN WATERLEVEL SENSOR
 const int WATERLEVEL_PIN = A4;
+const int NUTRIWATERLEVEL_PIN = A5;
 
 // VARIABLE SETUP
-int LEE_temperature = 0;
-int LEE_humidity = 0;
-int SUN_water_level = 0;
+int Temperature = 0;
+int Humidity = 0;
+int Water_level = 0;
+int Nutri_Water_level = 0;
 
 bool isCoolingPenActive = false;
 bool isServoActive = false;
@@ -48,20 +50,24 @@ void setup() {
 }
 
 void loop() {
-  LEE_humidity = dht.readHumidity();  // Read humidity
-  LEE_temperature = dht.readTemperature();  // Read temperature
-  SUN_water_level = analogRead(WATERLEVEL_PIN);
+  Temperature = dht.readTemperature();  // Read temperature
+  Humidity = dht.readHumidity();  // Read humidity
+  Water_level = analogRead(WATERLEVEL_PIN);
+  Nutri_Water_level = analogRead(NUTRIWATERLEVEL_PIN);
 
   Serial.print("Humidity: ");
-  Serial.print(LEE_humidity);
+  Serial.print(Humidity);
   Serial.print(", Temperature: ");
-  Serial.print(LEE_temperature);
+  Serial.print(Temperature);
   Serial.print(", Water Level: ");
-  Serial.print(SUN_water_level);
+  Serial.print(Water_level);
+  Serial.print(", Nutrition Water Level: ");
+  Serial.print(Nutri_Water_level);
+
 
   Serial.println();
 
-  delay(1000);
+  delay(100);
 
   // AUTOMATION SETUP 
   if (Serial.available() > 0) { // Writeread()
