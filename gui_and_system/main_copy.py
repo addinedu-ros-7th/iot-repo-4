@@ -48,6 +48,7 @@ main_usd_port = portlist[-1].split(' ')[0]
 
 class DetectionThread(QThread):
     image_update = pyqtSignal(QImage)
+    detection_data_update = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
@@ -92,15 +93,18 @@ class DetectionThread(QThread):
                     im0 = result['image']
                     detections = result['detections']  # 검출된 객체 정보
 
-                    # 검출된 객체 정보를 배열 형태로 출력 (필요에 따라 사용)
-                    # self.detection_array = []
-                    # for detection in detections:
-                    #     self.detection_array.append({
-                    #         'bbox': detection['bbox'],
-                    #         'confidence': detection['confidence'],
-                    #         'class': detection['class'],
-                    #         'label': detection['label']
-                    #     })
+                    # 검출된 객체 정보를 배열 형태로 추출하여 시그널로 전달
+                    self.detection_array = []
+                    for detection in detections:
+                        self.detection_array.append({
+                            'bbox': detection['bbox'],
+                            'confidence': detection['confidence'],
+                            'class': detection['class'],
+                            'label': detection['label']
+                        })
+
+                    # 시그널을 통해 검출된 객체 정보를 전달
+                    self.detection_data_update.emit(self.detection_array)
 
                     # OpenCV 이미지를 PyQt 이미지로 변환하여 시그널로 전달
                     im0 = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)  # BGR을 RGB로 변환
@@ -187,14 +191,56 @@ class WindowClass(QMainWindow, from_class):
 
         self.arduinoData1 = serial.Serial('/dev/ttyACM0', 9600)
         #self.arduinoData2 = serial.Serial('/dev/ttyACM1', 9600)
-
+        
 
         # 업데이트 주기
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_plot )
-        self.timer.start(50)
+        self.timer.start(200)
+
+        # DB에 넣을 값들
+
+        self.security_state = False
+        self.normal_count = 0
+        self.abnormal_count = 0
 
 
+        # 검출된 객체 정보 저장 변수
+        self.detection_data = []
+        # 객체 검출 스레드 생성 및 시그널 연결
+        self.detection_thread = DetectionThread()
+        self.detection_thread.image_update.connect(self.update_image)
+        self.detection_thread.detection_data_update.connect(self.update_detection_data)
+        self.detection_thread.start()
+        
+
+        ######################################################################## UI 관련 설정
+
+        """
+        # 그래프가 들어가 attribute 생성
+        self.humidity_canvas = pg.GraphicsLayoutWidget()
+        # PyQt에서 만든 attribute에 삽입
+        self.wdg_humidity.setLayout(QVBoxLayout())
+        self.wdg_humidity.layout().addWidget(self.humidity_canvas)
+
+        self.temperature_canvas = pg.GraphicsLayoutWidget()             
+        self.wdg_temperature.setLayout(QVBoxLayout())
+        self.wdg_temperature.layout().addWidget(self.temperature_canvas)
+
+        self.HumidityPlot = self.humidity_canvas.addPlot()
+        self.HumidityPlot.setXRange(0,20)
+        self.HumidityPlot.setYRange(0,100)
+        self.HumidityPlotLine = self.HumidityPlot.plot(pen= 'b') # 그래프라인만 따로 update 되기 떄문에
+
+        self.temperaturePlot = self.temperature_canvas.addPlot()
+        self.temperaturePlot.setXRange(0,20)
+        self.temperaturePlot.setYRange(0,30)
+        self.temperaturePlotLine = self.temperaturePlot.plot(pen= 'g') # 그래프라인만 따로 update 되기 떄문에
+
+        self.x = np.arange(20)  # x range 20으로 고정
+        self.temperature_data = np.zeros(20) # array로 저장
+        self.humidity_data = np.zeros(20)
+        """
 
         # 스타일시트를 사용하여 배경을 투명하게 설정
         self.leftMenuSubContainer.setStyleSheet("background-color: transparent;")
@@ -244,24 +290,14 @@ class WindowClass(QMainWindow, from_class):
 
         # 초기 화면을 대시보드 페이지로 설정
         self.stackedWidget.setCurrentIndex(0)
-        self.changePage(0, self.DashboardBtn)
+        self.changePage(3, self.DashboardBtn)
 
         # 현재 활성화된 버튼을 추적하기 위한 변수
         self.currentActiveButton = None
 
-        # 객체 검출 스레드 생성 및 시그널 연결
-        self.detection_thread = DetectionThread()
-        self.detection_thread.image_update.connect(self.update_image)
-        self.detection_thread.start()
+        
 
-    def closeEvent(self, event):
-        # 스레드 정지 및 자원 해제
-        self.detection_thread.stop()
-        event.accept()
-
-    def update_image(self, qt_image):
-        # 이미지 레이블에 업데이트
-        self.image_label.setPixmap(QPixmap.fromImage(qt_image))
+    
 
     def toggleMenu(self):
         target_width = 50 if self.menuExpanded else 150
@@ -404,27 +440,68 @@ class WindowClass(QMainWindow, from_class):
 
 
 
-################################################################################################################
+        ################################################################################################################
+    def closeEvent(self, event):
+        # 스레드 정지 및 자원 해제
+        self.detection_thread.stop()
+        event.accept()
+
+    def update_image(self, qt_image):
+        # 이미지 레이블에 업데이트
+        self.image_label.setPixmap(QPixmap.fromImage(qt_image))
 
 
+    def update_detection_data(self, detection_array):
+        # 검출된 객체 정보를 업데이트
+        self.detection_data = detection_array
+        
+
+    def find_normal_and_abnormal (self):
+        normal_count_ =0
+        abnormal_count_ = 0
+        for dictionary in self.detection_data:
+            if dictionary["label"] == "normal":
+                normal_count_ +=1
+            else :
+                abnormal_count_ +=1
+        self.normal_count =  normal_count_ 
+        self.abnormal_count = abnormal_count_
+        
+
+
+    def send_data_to_arduinoData1(self, data): # reset 버튼에서 호출
+        data_str = str(data) + "\n"  # 데이터 뒤에 줄바꿈 추가 (아두이노에서 한 줄 단위로 읽을 수 있도록)
+        self.arduinoData1.write(data_str.encode())  # 데이터를 인코딩하여 전송
 
     def update_plot(self):
-            
-        if self.arduinoData1.in_waiting > 0:
+        
+        self.find_normal_and_abnormal()
+        
+        
 
-            data2 = self.arduinoData1.readline().decode("utf-8").strip()
+        if self.arduinoData1.in_waiting > 0:   # 아두이노 1에서
             
+            data2 = self.arduinoData1.readline().decode("utf-8").strip() # 데이터를 받음
+            #print(data2)
+
             try :
-                if "Security: " in data2 :
-                    print(data2[-1:])
-                    if
+                if "Security: " in data2 :    # 아두이노 1에서 받은데이터에
+                    state = data2.split("Security:")[1].split("\n")[0].strip()
+                    if state == "2":              # 상태값이 2일경우 보안 on 상태
+                        self.security_state = True
+                    else :                      # 상태값이 0이나 1일경우 보안 off 상태
+                        self.security_state = False
             except (ValueError, IndexError):
                 print("data error")
+        
+        print("normal count = ", self.normal_count)
+        print("abnormal count = ", self.abnormal_count)
+        print("security state = ", self.security_state)
 
         #if self.arduinoData2.in_waiting > 0:
             #data = self.arduinoData2.readline().decode('utf-8').strip()
-            """
-            #아두이노 1 처리
+        """
+            #아두이노 2 처리
             try:
                 # 데이터 읽어오기
                 if "Temperature:" in data and "Humidity:" in data and 'Water Level' in data:
@@ -453,14 +530,14 @@ class WindowClass(QMainWindow, from_class):
 
             except (ValueError, IndexError):
                 print("Data format error:", data)
-            # SmartFarmTable.InsertDataIntoDB().append( , , , , , , , )
-                """
+        """
 
 
                 
 
     def closeEvent(self, event):
-        self.arduinoData.close()
+        self.arduinoData1.close()
+        #self.arduinoData2.close()
         self.cap.release()
         event.accept()
 
