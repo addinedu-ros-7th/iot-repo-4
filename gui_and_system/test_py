@@ -20,7 +20,6 @@ from serial import SerialException
 import serial.tools
 from serial.tools import list_ports
 
-
 # 필수 모듈 import
 import sys
 import os
@@ -32,6 +31,8 @@ import cv2
 # import torch
 import numpy as np
 from PyQt5 import uic
+
+import resources_rc
 
 import os
 os.environ["QT_LOGGING_RULES"] = "*.debug=false"
@@ -53,7 +54,7 @@ sys.path.append(os.path.abspath(parent_dir_AI))
 from PyQt5 import uic
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-ui_file_path = os.path.join(current_dir, 'test.ui')
+ui_file_path = os.path.join(current_dir, 'interface03.ui')
 
 form_class = uic.loadUiType(ui_file_path)[0]
 
@@ -153,7 +154,10 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
                 self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
                 self.le_connection_status.setText("Arduino connection failed")
                 print("Failed to connect to Arduino")
+
             print(data)
+        else:
+            self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
 
     def update_plot(self):
         self.read_arduino_data()  # Call data-reading function
