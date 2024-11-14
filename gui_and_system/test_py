@@ -31,30 +31,31 @@ from PyQt5.QtCore import Qt
 import cv2
 # import torch
 import numpy as np
+from PyQt5 import uic
 
 import os
 os.environ["QT_LOGGING_RULES"] = "*.debug=false"
 
-
+from use_table import UserTable,SmartFarmTable
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Define paths to the AI and gui_and_system directories
 parent_dir_AI = os.path.join(current_dir, '..', 'AI')
-parent_dir_GUI_AND_SYSTEM = os.path.join(current_dir, '..', 'gui_and_system')
 
 # Add these directories to sys.path for module importing
 sys.path.append(os.path.abspath(parent_dir_AI))
-sys.path.append(os.path.abspath(parent_dir_GUI_AND_SYSTEM))
-
-
-from gui_and_system.use_table import *
 
 
 # GUI Theme
 # import qdarktheme
 
 # PyGt Desinger File
-form_class = uic.loadUiType("test.ui")[0]
+from PyQt5 import uic
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+ui_file_path = os.path.join(current_dir, 'test.ui')
+
+form_class = uic.loadUiType(ui_file_path)[0]
 
 # 포트 자동 인식
 ports = serial.tools.list_ports.comports()
@@ -74,13 +75,7 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
             # SET ATTRIBUTE PROPERTY
         # Arduino connection status 
         self.le_connection_status.setText("Connecting to Arduino...")
-        try:
-            self.arduinoData = serial.Serial(main_usd_port, 9600)
-            self.le_connection_status.setText("Connected to Arduino")
-        except SerialException:
-            self.le_connection_status.setText("Arduino connection failed")
-            print("Failed to connect to Arduino")
-
+    
         # 그래프가 들어가 attribute 생성
         self.humidity_canvas = pg.GraphicsLayoutWidget()
         # PyQt에서 만든 attribute에 삽입
@@ -150,6 +145,15 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
                     self.mapped_nutritionwaterlevel = int(((self.nutritionwaterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
             except (ValueError, IndexError):
                 print("Data format error:", data) 
+
+            try:
+                self.arduinoData = serial.Serial(main_usd_port, 9600)
+                self.le_connection_status.setText("Connected to Arduino")
+            except SerialException:
+                self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
+                self.le_connection_status.setText("Arduino connection failed")
+                print("Failed to connect to Arduino")
+            print(data)
 
     def update_plot(self):
         self.read_arduino_data()  # Call data-reading function
