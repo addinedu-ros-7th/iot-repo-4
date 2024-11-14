@@ -42,9 +42,7 @@ parent_dir_GUI_AND_SYSTEM = os.path.join(current_dir, 'gui_and_system')
 sys.path.append(os.path.abspath(parent_dir_AI))
 sys.path.append(os.path.abspath(parent_dir_GUI_AND_SYSTEM))
 
-import use_table
-
-
+from gui_and_system.use_table import *
 
 
 # GUI Theme
@@ -94,52 +92,66 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
         self.temperature_data = np.zeros(20) # array로 저장
         self.humidity_data = np.zeros(20)
 
+
+        self.temperature_str = "0"
+        self.humidity_str = "0"
+        self.waterlevel_str = "0"
+        self.nutritionwaterlevel_str = "0"
+
         # 업데이트 주기
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_plot)
-        self.timer.start(50)
+        self.timer.start(500)
+
 
     #DeepLearing
 
     # GUI Graph Plot 
+    def read_arduino_data(self):
+        if self.arduinoData.in_waiting > 0:
+            data = self.arduinoData.readline().decode('utf-8').strip()
+            try:
+                if "Temperature:" in data and "Humidity:" in data and 'Water Level:' in data and 'Nutrition Water Level:' in data:
+                    self.temperature_str = data.split("Temperature:")[1].split(",")[0].strip()
+                    self.humidity_str = data.split("Humidity:")[1].split(",")[0].strip()
+                    self.waterlevel_str = data.split("Water Level:")[1].split(",")[0].strip()
+                    self.nutritionwaterlevel_str = data.split("Nutrition Water Level:")[1].split(",")[0].strip()
+
+                    # Convert values
+                    self.temperature = int(self.temperature_str)
+                    self.humidity = int(self.humidity_str)
+                    self.soilhumidity = int(self.humidity_str)
+                    self.waterlevel = int(self.waterlevel_str)
+                    self.mapped_waterlevel = int(((self.waterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
+                    self.nutritionwaterlevel = int(self.nutritionwaterlevel_str)
+                    self.mapped_nutritionwaterlevel = int(((self.nutritionwaterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
+            except (ValueError, IndexError):
+                print("Data format error:", data) 
+
     def update_plot(self):
-            if self.arduinoData.in_waiting > 0:
-                data = self.arduinoData.readline().decode('utf-8').strip()
-                try:
-                    # 데이터 읽어오기
-                    if "Temperature:" in data and "Humidity:" in data and 'Water Level:' in data and 'Nutrition Water Level:' in data:
-                        temperature_str = data.split("Temperature:")[1].split(",")[0].strip()
-                        humidity_str = data.split("Humidity:")[1].split(",")[0].strip()
-                        waterlevel_str = data.split("Water Level:")[1].split(",")[0].strip()
-                        nutritionwaterlevel_str = data.split("Nutrition Water Level:")[1].split(",")[0].strip()
+        self.read_arduino_data()  # Call data-reading function
 
+        # Update plot data
+        self.temperature_data = np.roll(self.temperature_data, -1)
+        self.temperature_data[-1] = self.temperature
+        self.humidity_data = np.roll(self.humidity_data, -1)
+        self.humidity_data[-1] = self.humidity
 
-                        temperature = int(temperature_str) # float??
-                        humidity = int(humidity_str) # float??
-                        waterlevel = int(waterlevel_str)
-                        mapped_waterlevel = int(((waterlevel - 0) * (100 - 50) / (1023 - 0)) + 50)
-                        nutritionwaterlevel = int(nutritionwaterlevel_str)
-                        mapped_nutritionwaterlevel = int(((nutritionwaterlevel - 0) * (100 - 50) / (1023 - 0)) + 50)
+        # Update GUI elements
+        self.le_temperature.setText(f"{self.temperature_str} °C")
+        self.le_humidity.setText(f"{self.humidity_str} %")
+        self.le_waterlevel.setText(f"{self.mapped_waterlevel} %")
+        self.le_nutwaterlevel.setText(f"{self.mapped_nutritionwaterlevel} %")
 
+        self.pbar_waterlevel.setValue(self.mapped_waterlevel)
+        self.pbar_nutwaterlevel.setValue(self.mapped_nutritionwaterlevel)
 
-                        self.temperature_data = np.roll(self.temperature_data, -1) # 마지막 값 자리 비우기 (옆으로 밀기)
-                        self.temperature_data[-1] = temperature # 마지막 값 업데이트
-                        self.humidity_data = np.roll(self.humidity_data, -1)
-                        self.humidity_data[-1] = humidity
+        # Update graph lines
+        self.temperaturePlotLine.setData(self.x, self.temperature_data)
+        self.HumidityPlotLine.setData(self.x, self.humidity_data)
 
-                        self.le_temperature.setText(f"{temperature_str} °C")
-                        self.le_humidity.setText(f"{humidity_str} %")
-                        self.le_waterlevel.setText(f"{mapped_waterlevel} %")
-                        self.le_nutwaterlevel.setText(f"{mapped_nutritionwaterlevel} %")
-
-                        self.pbar_waterlevel.setValue(mapped_waterlevel)
-                        self.pbar_nutwaterlevel.setValue(mapped_nutritionwaterlevel)
-
-                        # 그래프 라인 업데이트
-                        self.temperaturePlotLine.setData(self.x, self.temperature_data)
-                        self.HumidityPlotLine.setData(self.x, self.humidity_data)
-                except (ValueError, IndexError):
-                    print("Data format error:", data)
+        farm_table = SmartFarmTable()
+        farm_table.append(self.mapped_waterlevel , self.mapped_nutritionwaterlevel, self.soilhumidity, self.humidity, self.temperature , 0 , 0 , 0 )
 
     def closeEvent(self, event):
         self.arduinoData.close()
