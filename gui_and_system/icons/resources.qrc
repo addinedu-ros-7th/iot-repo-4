@@ -1,0 +1,18 @@
+<RCC>
+  <qresource>
+    <file>banner.png</file>
+    <file>dashboard.png</file>
+    <file>F.png</file>
+    <file>login.png</file>
+    <file>loginbackground.jpg</file>
+    <file>logout.png</file>
+    <file>menu.png</file>
+    <file>off.png</file>
+    <file>off_button.png</file>
+    <file>on.png</file>
+    <file>on_button.png</file>
+    <file>resized_toggle_off.png</file>
+    <file>resized_toggle_on.png</file>
+    <file>settings.png</file>
+  </qresource>
+</RCC>

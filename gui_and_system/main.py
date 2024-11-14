@@ -1,12 +1,14 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QTableWidgetItem, QHeaderView
 from PyQt5.QtCore import QPropertyAnimation, QEasingCurve
+from PyQt5.QtGui import QIcon
 from PyQt5 import uic
 import pymysql
 
 import resources_rc  # 리소스 파일 import
 
-from_class = uic.loadUiType("interface01.ui")[0]
+# UI 파일 로드
+from_class = uic.loadUiType("interface03.ui")[0]
 
 
 class UserTable():
@@ -21,7 +23,7 @@ class UserTable():
         self.init()
 
     def init(self):
-        self.conn = pymysql.connect(host='localhost', user='root', password='whdgh29k05', charset='utf8')
+        self.conn = pymysql.connect(host='localhost', user='root', password='0819', charset='utf8')
         self.cursor = self.conn.cursor()
 
         self.cursor.execute("CREATE DATABASE IF NOT EXISTS smart_farm;")
@@ -77,9 +79,27 @@ class WindowClass(QMainWindow, from_class):
         self.setupUi(self)
         self.setWindowTitle("FarmAI")
 
+
+        # 초기 아이콘 상태 설정
+        self.is_toggle_on = False
+
+        # 각 버튼의 초기 상태 설정
+        self.is_fan_on = False
+        self.is_fan2_on = False
+        self.is_window1_on = False
+        self.is_window2_on = False
+        self.is_light_on = False
+
+
+        # 각 버튼의 아이콘 초기 설정
+        self.on_off_fan.setIcon(QIcon(":/off.png"))
+        self.on_off_fan2.setIcon(QIcon(":/off.png"))
+        self.on_off_window.setIcon(QIcon(":/off.png"))
+        self.on_off_window2.setIcon(QIcon(":/off.png"))
+        self.on_off_light.setIcon(QIcon(":/off.png"))
+
         # 스타일시트를 사용하여 배경을 투명하게 설정
         self.leftMenuSubContainer.setStyleSheet("background-color: transparent;")
-        #self.SettingsBtn.setStyleSheet("background-color: transparent;")  # "관리자" 버튼 배경도 투명하게 설정
 
         # UserTable 인스턴스 생성
         self.user_table = UserTable()
@@ -103,8 +123,6 @@ class WindowClass(QMainWindow, from_class):
         # 버튼 이름과 텍스트를 저장해두는 딕셔너리
         self.buttonTexts = {
             "DashboardBtn": "대시보드",
-            "ControlBtn": "제어설정",
-            "SensorBtn": "센서 데이터",
             "LogoutBtn": "로그아웃",
             "SettingsBtn": "관리자"
         }
@@ -117,18 +135,41 @@ class WindowClass(QMainWindow, from_class):
 
         # 버튼 클릭 시 페이지 전환 및 강조 효과 적용
         self.DashboardBtn.clicked.connect(lambda: self.changePage(0, self.DashboardBtn))
-        self.ControlBtn.clicked.connect(lambda: self.changePage(1, self.ControlBtn))
-        self.SensorBtn.clicked.connect(lambda: self.changePage(2, self.SensorBtn))
-        self.LoginBtn.clicked.connect(lambda: self.changePage(3, self.LoginBtn))
+        #self.ControlBtn.clicked.connect(lambda: self.changePage(1, self.ControlBtn))
+        #self.SensorBtn.clicked.connect(lambda: self.changePage(2, self.SensorBtn))
+        self.LoginBtn.clicked.connect(lambda: self.changePage(1, self.LoginBtn))
         self.LogoutBtn.clicked.connect(lambda: self.changePage(0, self.DashboardBtn))
-        self.SettingsBtn.clicked.connect(lambda: self.changePage(4, self.SettingsBtn))
+        self.SettingsBtn.clicked.connect(lambda: self.changePage(2, self.SettingsBtn))
 
         # 초기 화면을 대시보드 페이지로 설정
         self.stackedWidget.setCurrentIndex(0)
         self.changePage(0, self.DashboardBtn)
 
-        # 현재 활성화된 버튼을 추적하기 위한 변수
-        self.currentActiveButton = None
+        # 다이얼 설정
+        self.dial_2.setMinimum(0)
+        self.dial_2.setMaximum(7)
+        self.dial_2.valueChanged.connect(self.on_dial_change)
+        # 다이얼 슬라이더 조작 시 페이지 전환 방지
+        self.dial_2.sliderPressed.connect(lambda: None)
+        self.set_dial_2_color("gray")  # 초기 색상 설정
+
+
+    def toggle_device(self, device):
+        """각 장치의 on/off 상태를 전환합니다."""
+        if device == "fan":
+            self.is_fan_on = not self.is_fan_on
+            self.on_off_fan.setIcon(QIcon(":/on.png") if self.is_fan_on else QIcon(":/off.png"))
+        elif device == "fan2":
+            self.is_fan2_on = not self.is_fan2_on
+            self.on_off_fan2.setIcon(QIcon(":/on.png") if self.is_fan2_on else QIcon(":/off.png"))
+        elif device == "window1":
+            self.is_window1_on = not self.is_window1_on
+            self.on_off_window.setIcon(QIcon(":/on.png") if self.is_window1_on else QIcon(":/off.png"))
+        elif device == "window2":
+            self.is_window2_on = not self.is_window2_on
+            self.on_off_window2.setIcon(QIcon(":/on.png") if self.is_window2_on else QIcon(":/off.png"))
+            self.is_light_on = not self.is_light_on
+            self.on_off_light.setIcon(QIcon(":/on.png") if self.is_light_on else QIcon(":/off.png"))
 
     def toggleMenu(self):
         target_width = 50 if self.menuExpanded else 150
@@ -186,8 +227,6 @@ class WindowClass(QMainWindow, from_class):
         """
 
         self.DashboardBtn.setStyleSheet(default_style)
-        self.ControlBtn.setStyleSheet(default_style)
-        self.SensorBtn.setStyleSheet(default_style)
         self.LoginBtn.setStyleSheet(default_style_login)
         self.SettingsBtn.setStyleSheet(default_style)
 
@@ -269,9 +308,39 @@ class WindowClass(QMainWindow, from_class):
         self.id_input.setText(selected_id)
         self.pw_input.setText(selected_pw)
 
+    def on_dial_change(self, value):
+        """다이얼 값에 따라 색상을 변경합니다."""
+        if value == 0:
+            self.set_dial_2_color("gray")
+        elif value in {1, 2, 3}:
+            self.set_dial_2_color("blue")
+        elif value in {4, 5, 6}:
+            self.set_dial_2_color("red")
+        elif value == 7:
+            self.set_dial_2_color("yellow")
+
+    def set_dial_2_color(self, color):
+        """다이얼에 고정 배경색을 적용합니다."""
+        color_styles = {
+            "gray": "#E0E0E0",
+            "blue": "#4682b4",
+            "red": "#8b0000",
+            "yellow": "#ffd700"
+        }
+        
+        selected_color = color_styles.get(color, "#808080")  # 색상이 없을 경우 기본 회색으로 설정
+
+        # 다이얼에 색상 스타일을 직접 적용
+        self.dial_2.setStyleSheet(f"""
+            QDial {{
+                background-color: {selected_color};
+                border-radius: {self.dial_2.width() // 2}px;
+            }}
+        """)
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     myWindow = WindowClass()
     myWindow.show()
     sys.exit(app.exec_())
-
