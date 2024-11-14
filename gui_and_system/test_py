@@ -271,7 +271,7 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
     
     def on_dial_value_changed(self, value):
         self.dial_value = value
-        print(f"Dial value changed to: {self.dial_value}")
+        print(f"Dial value: {self.dial_value}")
 
 
     #GUI function
