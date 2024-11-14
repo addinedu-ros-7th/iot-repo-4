@@ -166,3 +166,6 @@ AI/best.pt
 gui_and_system/icons/resources_rc.py
 
 .DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
