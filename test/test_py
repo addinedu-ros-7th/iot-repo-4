@@ -36,14 +36,16 @@ import os
 os.environ["QT_LOGGING_RULES"] = "*.debug=false"
 
 
-# 현재 스크립트의 디렉토리 경로
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# 상위 디렉토리의 경로
-parent_dir_AI = os.path.join(current_dir, 'AI')
-parent_dir_GUI_AND_SYSTEM = os.path.join(current_dir, 'gui_and_system')
-# 상위 디렉토리를 sys.path에 추가
+
+# Define paths to the AI and gui_and_system directories
+parent_dir_AI = os.path.join(current_dir, '..', 'AI')
+parent_dir_GUI_AND_SYSTEM = os.path.join(current_dir, '..', 'gui_and_system')
+
+# Add these directories to sys.path for module importing
 sys.path.append(os.path.abspath(parent_dir_AI))
 sys.path.append(os.path.abspath(parent_dir_GUI_AND_SYSTEM))
+
 
 from gui_and_system.use_table import *
 
