@@ -26,11 +26,7 @@ class SmartFarmTable():
         # 데이터베이스 연결 및 SMART_FARM 테이블 초기화
         # 이미 smart_farm 데이터베이스가 없다면 생성하고,
         # SMART_FARM 테이블이 없으면 생성합니다.
-<<<<<<< Updated upstream
-        self.conn = pymysql.connect(host='localhost', user='root', charset='utf8')
-=======
-        self.conn = pymysql.connect(host='localhost', user='root', password='whdgh29k05', charset='utf8')
->>>>>>> Stashed changes
+        self.conn = pymysql.connect(host='localhost', user='root', password= "whdgh29k05" ,charset='utf8')
         self.cursor = self.conn.cursor()
 
         self.cursor.execute("CREATE DATABASE IF NOT EXISTS smart_farm;")
@@ -121,7 +117,7 @@ class UserTable():
         # 이미 smart_farm 데이터베이스가 없다면 생성하고,
         # USER 테이블이 없으면 생성합니다.
         # 기본적으로 'admin' 계정(ID: 'admin', PW: 'admin')이 없으면 생성됩니다.
-        self.conn = pymysql.connect(host='localhost', user='root', charset='utf8')
+        self.conn = pymysql.connect(host='localhost', user='root', password= "whdgh29k05", charset='utf8')
         self.cursor = self.conn.cursor()
 
         self.cursor.execute("CREATE DATABASE IF NOT EXISTS smart_farm;")
