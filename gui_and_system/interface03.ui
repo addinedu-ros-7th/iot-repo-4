@@ -1575,6 +1575,19 @@ QPushButton:pressed {
              </rect>
             </property>
            </widget>
+           <widget class="QLineEdit" name="le_soilmoisture">
+            <property name="geometry">
+             <rect>
+              <x>1030</x>
+              <y>930</y>
+              <width>161</width>
+              <height>51</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>토양 습도</string>
+            </property>
+           </widget>
           </widget>
           <widget class="QWidget" name="page_2_login">
            <property name="styleSheet">
