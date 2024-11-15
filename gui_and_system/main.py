@@ -398,8 +398,31 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
     # 별도 스레드에서 시리얼 데이터 읽기
     def read_serial_data(self):
         while True:
-            # arduinoSubData에서 데이터 읽기
+            
+           
+            
             data2 = self.arduinoSubData.readline().decode("utf-8").strip()
+            
+
+                ## 아두이노 연결 시도
+            try:
+                self.arduinoSubData = serial.Serial(sub_usd_port, 9600)
+                self.le_connection_status.setText("Connected to Arduino Sub")
+            except SerialException:
+                self.arduinoSubData = serial.Serial(sub_usd_port, 9600)  # TinkerCAD serial 가능?
+                self.le_connection_status.setText("Arduino Sub connection failed")
+                print("Failed to connect to Arduino Sub")
+
+            try:
+                self.arduinoMainData = serial.Serial(main_usd_port, 9600)
+                self.le_connection_status.setText("Connected to Arduino Main")
+            except SerialException:
+                self.arduinoMainData = serial.Serial(main_usd_port, 9600)  # TinkerCAD serial 가능?
+                self.le_connection_status.setText("Arduino Main connection failed")
+                print("Failed to connect to Arduino Main")
+
+
+
             if data2:
                 print("data2: ", data2)
                 try:
@@ -434,10 +457,36 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                         self.mapped_nutritionwaterlevel = int(((self.nutritionwaterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
                 except (ValueError, IndexError):
                     print("Data format error:", data)
+
+            try:
+                self.arduinoMainData = serial.Serial(main_usd_port, 9600)
+                self.le_connection_status.setText("Connected to Arduino")
+            except SerialException:
+                self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
+                self.le_connection_status.setText("Arduino connection failed")
+                print("Failed to connect to Arduino")
+
             time.sleep(0.1)  # CPU 사용량을 낮추기 위해 약간의 대기 시간을 추가
 
     def update_plot(self):
         self.find_normal_and_abnormal()
+
+        ## 아두이노 연결 시도
+        try:
+            self.arduinoSubData = serial.Serial(sub_usd_port, 9600)
+            self.le_connection_status.setText("Connected to Arduino Sub")
+        except SerialException:
+            self.arduinoSubData = serial.Serial(sub_usd_port, 9600)  # TinkerCAD serial 가능?
+            self.le_connection_status.setText("Arduino Sub connection failed")
+            print("Failed to connect to Arduino Sub")
+
+        try:
+            self.arduinoMainData = serial.Serial(main_usd_port, 9600)
+            self.le_connection_status.setText("Connected to Arduino Main")
+        except SerialException:
+            self.arduinoMainData = serial.Serial(main_usd_port, 9600)  # TinkerCAD serial 가능?
+            self.le_connection_status.setText("Arduino Main connection failed")
+            print("Failed to connect to Arduino Main")
 
         # Update plot data
         self.temperature_data = np.roll(self.temperature_data, -1)
