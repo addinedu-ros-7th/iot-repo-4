@@ -151,9 +151,10 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
 
         ###########
 
-        self.dial_2.valueChanged.connect(self.on_dial_value_changed)
+        #GUI Read
         self.dial_value = self.dial_2.value()
-   
+        serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
+
         # Arduino connection status 
         self.le_connection_status.setText("Connecting to Arduino...")
     

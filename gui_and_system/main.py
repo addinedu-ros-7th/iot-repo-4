@@ -308,10 +308,10 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.dial_2.sliderPressed.connect(lambda: None)
         self.set_dial_2_color("gray")  # 초기 색상 설정
 
-        # SET ATTRIBUTE PROPERTY
-        # Arduino connection status
-        self.le_connection_status.setText("Connecting to Arduino...")
 
+        # Arduino connection status
+
+        self.le_connection_status.setText("Connecting to Arduino...")
         # 그래프가 들어갈 attribute 생성
         self.humidity_canvas = pg.GraphicsLayoutWidget()
         # PyQt에서 만든 attribute에 삽입
@@ -357,6 +357,15 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(2000)  # 100 밀리초마다 업데이트
 
+        # GUI Read
+        # 그냥 print 하는 함수 사용
+        self.dial_2.valueChanged.connect(self.dial_value_status)
+
+        self.dial_value = self.dial_2.value()
+
+
+        serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
+
     # DeepLearning
     def closeEvent(self, event):
         # 스레드 정지 및 자원 해제
@@ -392,7 +401,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
             # arduinoSubData에서 데이터 읽기
             data2 = self.arduinoSubData.readline().decode("utf-8").strip()
             if data2:
-                print("data2", data2)
+                print("data2: ", data2)
                 try:
                     state = data2.split("Security:")[1].strip()
                     print("data2 split", state)
@@ -627,13 +636,13 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
     def on_dial_change(self, value):
         """다이얼 값에 따라 색상을 변경합니다."""
         if value == 0:
-            self.set_dial_2_color("gray")
+            self.set_dial_2_color("gray") # Off
         elif value in {1, 2, 3}:
-            self.set_dial_2_color("blue")
+            self.set_dial_2_color("blue") # Cooling
         elif value in {4, 5, 6}:
-            self.set_dial_2_color("red")
+            self.set_dial_2_color("red") # Heating
         elif value == 7:
-            self.set_dial_2_color("yellow")
+            self.set_dial_2_color("yellow") # Auto
 
     def set_dial_2_color(self, color):
         """다이얼에 고정 배경색을 적용합니다."""
@@ -653,6 +662,10 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                 border-radius: {self.dial_2.width() // 2}px;
             }}
         """)
+
+    def dial_value_status(self, value):
+        self.dial_value = value
+        print(f"Dial value: {self.dial_value}")
 
 if __name__ == '__main__':
     App = QApplication(sys.argv)

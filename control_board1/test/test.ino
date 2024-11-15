@@ -18,16 +18,18 @@ DHT11 dht(DHT_PIN);  // Pass the DHT_PIN to the constructor
 const int R = A2;
 const int B = A1;
 const int G = A0;
-
-// SUN WATERLEVEL SENSOR
-const int WATERLEVEL_PIN = A4;
-const int NUTRIWATERLEVEL_PIN = A5;
+// WATER/NUTRI LEVEL SENSOR
+const int WATERLEVEL_PIN = A3;
+const int NUTRIWATERLEVEL_PIN = A4;
+// Moisture
+const int MOISTURE_PIN = A5;
 
 // VARIABLE SETUP
 int Temperature = 0;
 int Humidity = 0;
 int Water_level = 0;
 int Nutri_Water_level = 0;
+int Moisture = 0;
 
 bool isCoolingPenActive = false;
 bool isServoActive = false;
@@ -54,6 +56,8 @@ void loop() {
   Humidity = dht.readHumidity();  // Read humidity
   Water_level = analogRead(WATERLEVEL_PIN);
   Nutri_Water_level = analogRead(NUTRIWATERLEVEL_PIN);
+  Moisture = analogRead(MOISTURE_PIN);
+  Moisture_mapped = map(Moisture, 0, 1023, 0, 100);
 
   Serial.print("Humidity: ");
   Serial.print(Humidity);
@@ -63,7 +67,8 @@ void loop() {
   Serial.print(Water_level);
   Serial.print(", Nutrition Water Level: ");
   Serial.print(Nutri_Water_level);
-
+  Serial.print(", Moisture: ");
+  Serial.print(Moisture_mapped);
 
   Serial.println();
 
