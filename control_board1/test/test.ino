@@ -23,6 +23,18 @@ const int WATERLEVEL_PIN = A3;
 const int NUTRIWATERLEVEL_PIN = A4;
 // Moisture
 const int MOISTURE_PIN = A5;
+// Pump
+const int WATER_PUMP_AA = 9
+const int WATER_PUMP_AB = 10
+const int NUTRI_PUMP_BA = 11
+const int NUTRI_PUMP_BB = 12
+
+// millis SETTING
+unsinged long pre_millis = 0;
+const long pumpVeryDryinterval = 5000;
+const long pumpNormalDryinterval = 3000;
+const long pumpDryinterval = 1000;
+const long pumpNutriInterval = 36000000;
 
 // VARIABLE SETUP
 int Temperature = 0;
@@ -46,6 +58,12 @@ void setup() {
   pinMode(G, OUTPUT);
   pinMode(B, OUTPUT);
 
+  pinMode(WATER_PUMP_AA, OUTPUT); //정방향
+  pinMode(WATER_PUMP_AB, OUTPUT);
+  pinMode(NUTRI_PUMP_BA, OUTPUT);
+  pinMode(NUTRI_PUMP_BB, OUTPUT);
+
+
   servo_pin_A.attach(6);
   servo_pin_B.attach(7);
 
@@ -59,6 +77,10 @@ void loop() {
   Nutri_Water_level = analogRead(NUTRIWATERLEVEL_PIN);
   Moisture = analogRead(MOISTURE_PIN);
   Moisture_mapped = map(Moisture, 0, 1023, 0, 100);
+
+  // Pump Automation
+  waterPump();
+  nutriPump();
 
   Serial.print("Humidity: ");
   Serial.print(Humidity);
@@ -88,6 +110,55 @@ void loop() {
     //Serial.println("Serial Error");
   }
 }
+
+void waterPump(){
+  unsinged long cur_millis = millis();
+
+  if (Moisture < 10 ){
+    if (cur_millis - pre_millis >= pumpVeryDryinterval){
+      pre_millis = cur_millis;
+      digitalWirte(WATER_PUMP_AA, HIGH);
+      digitalWirte(WATER_PUMP_AB, LOW);
+
+      digitalWirte(WATER_PUMP_AA, LOW);
+      digitalWirte(WATER_PUMP_AB, LOW); // digitalWirte(WATER_PUMP_AB, HIGH ???);
+    }
+  }
+  if (Moisture < 20 ){
+    if (cur_millis - pre_millis >= pumpNormalDryinterval){
+      pre_millis = cur_millis;
+      digitalWirte(WATER_PUMP_AA, HIGH);
+      digitalWirte(WATER_PUMP_AB, LOW);
+
+      digitalWirte(WATER_PUMP_AA, LOW);
+      digitalWirte(WATER_PUMP_AB, LOW); // digitalWirte(WATER_PUMP_AB, HIGH ???);
+    }
+  }
+  if (Moisture < 30 ){
+    if (cur_millis - pre_millis >= pumpDryinterval){
+      pre_millis = cur_millis;
+      digitalWirte(WATER_PUMP_AA, HIGH);
+      digitalWirte(WATER_PUMP_AB, LOW);
+      //OFF
+      digitalWirte(WATER_PUMP_AA, LOW);
+      digitalWirte(WATER_PUMP_AB, LOW);
+    }
+  }
+} 
+
+void nutriPump(){
+  unsinged long cur_millis = millis();
+
+  if (cur_millis - pre_millis >= pumpNutriInterval){
+    digitalWirte(NUTRI_PUMP_BA, HIGH);
+    digitalWirte(NUTRI_PUMP_BB, LOW);
+    //OFF
+    digitalWirte(WATER_PUMP_BA, LOW);
+    digitalWirte(WATER_PUMP_BB, LOW);
+  }
+
+}
+
 
 // Function Setup
 void coolingPen() {
