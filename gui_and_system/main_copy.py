@@ -5,7 +5,6 @@ import sys
 import pymysql
 import sys
 import time
-import threading
 
 # PyQt
 from PyQt5.QtWidgets import *
@@ -29,20 +28,25 @@ from PyQt5.QtGui import *
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 import cv2
+# import torch
 import numpy as np
 from PyQt5 import uic
 import cv2
 import torch
 import numpy as np
-from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QImage
-from PyQt5.QtGui import QPixmap
+import serial  # serial 모듈 import
+from serial.tools import list_ports
+from use_table import UserTable, SmartFarmTable
 import resources_rc  # 리소스 파일 import
+
+
+import resources_rc
 
 import os
 os.environ["QT_LOGGING_RULES"] = "*.debug=false"
 
-from use_table import UserTable, SmartFarmTable
+from use_table import UserTable,SmartFarmTable
+
 
 # 현재 스크립트의 디렉토리 경로
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +59,12 @@ sys.path.append(os.path.abspath(parent_dir))
 
 import detect_1  # 수정된 detect_1.py 파일 가져오기 (객체 검출 기능을 구현한 모듈)
 
-# PyQt Designer File
+
+
+# GUI Theme
+# import qdarktheme
+
+# PyGt Desinger File
 from PyQt5 import uic
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -63,12 +72,22 @@ ui_file_path = os.path.join(current_dir, 'interface03.ui')
 
 form_class = uic.loadUiType(ui_file_path)[0]
 
-main_usd_port = "/dev/ttyACM0"  # "/dev/ttyACM0"
-sub_usd_port =  "/dev/ttyACM1" # "/dev/ttyACM1"
+
+
+
+
+
+main_usd_port = "/dev/ttyACM0"  # 메인 Arduino 포트 (예: "/dev/ttyACM0")
+sub_usd_port = "/dev/ttyACM1"
 
 # main_usd_port와 sub_usd_port를 사용하여 Arduino에 연결
 print(f"Main USB Port: {main_usd_port}")
 print(f"Sub USB Port: {sub_usd_port}")
+
+
+
+
+
 
 class DetectionThread(QThread):
     image_update = pyqtSignal(QImage)
@@ -81,7 +100,7 @@ class DetectionThread(QThread):
         self.opt.weights = '../AI/best.pt'
         self.opt.source = 0
         self.opt.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.opt.imgsz = (512, 512)
+        self.opt.imgsz = (480, 480)
         self.opt.conf_thres = 0.25
         self.opt.iou_thres = 0.45
         self.opt.classes = None
@@ -209,20 +228,20 @@ class DetectionThread(QThread):
 
 
 
+
+
+
 # Main Window
-class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
-    def __init__(self):
+class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
+    def __init__(self): 
         super(SunnyMainWindow, self).__init__()
         self.setupUi(self)
 
-        # 시리얼 포트를 타임아웃과 함께 초기화
-        self.arduinoMainData = serial.Serial(main_usd_port, 9600, timeout=0.1)
-        self.arduinoSubData = serial.Serial(sub_usd_port, 9600, timeout=0.1)
+        self.arduinoMainData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
+        self.arduinoSubData = serial.Serial(sub_usd_port, 9600) 
 
-        # 시리얼 읽기 스레드 시작
-        self.serial_thread = threading.Thread(target=self.read_serial_data)
-        self.serial_thread.daemon = True
-        self.serial_thread.start()
+        
+
 
         # 검출된 객체 정보 저장 변수
         self.detection_data = []
@@ -233,7 +252,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.detection_thread.start()
 
 
-        self.last_data_append_time = time.time()
+
 
 
         # SET ATTRIBUTE PROPERTY
@@ -247,6 +266,69 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.is_window1_on = False
         self.is_window2_on = False
         self.is_light_on = False
+
+
+        # 각 버튼의 아이콘 초기 설정
+        self.on_off_fan.setIcon(QIcon(":/off.png"))
+        self.on_off_fan2.setIcon(QIcon(":/off.png"))
+        self.on_off_window.setIcon(QIcon(":/off.png"))
+        self.on_off_window2.setIcon(QIcon(":/off.png"))
+        self.on_off_light.setIcon(QIcon(":/off.png"))
+
+        # 스타일시트를 사용하여 배경을 투명하게 설정
+        self.leftMenuSubContainer.setStyleSheet("background-color: transparent;")
+
+        # UserTable 인스턴스 생성
+        self.user_table = UserTable()
+
+        # 버튼 이벤트 연결
+        self.loadBtn.clicked.connect(self.load_data)
+        self.addBtn.clicked.connect(self.add_user)
+        self.updateBtn.clicked.connect(self.update_user)
+        self.deleteBtn.clicked.connect(self.delete_user)
+        self.tableWidget.cellClicked.connect(self.load_selected_user)
+
+        # tableWidget 설정 및 헤더 너비 확장 모드 적용
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setHorizontalHeaderLabels(["ID", "Password"])
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # 헤더 너비 확장
+
+        # 메뉴 초기 상태 설정 (확장된 상태)
+        self.menuExpanded = True
+        self.leftMenuSubContainer.setFixedWidth(150)
+
+        # 버튼 이름과 텍스트를 저장해두는 딕셔너리
+        self.buttonTexts = {
+            "DashboardBtn": "대시보드",
+            "LogoutBtn": "로그아웃",
+            "SettingsBtn": "관리자"
+        }
+
+        # 로그인 버튼 클릭 이벤트 연결
+        self.pushButton_login.clicked.connect(self.login)
+
+        # 버튼 클릭 시 메뉴를 확장/축소하는 이벤트 연결
+        self.menuBtn.clicked.connect(self.toggleMenu)
+
+        # 버튼 클릭 시 페이지 전환 및 강조 효과 적용
+        self.DashboardBtn.clicked.connect(lambda: self.changePage(0, self.DashboardBtn))
+        #self.ControlBtn.clicked.connect(lambda: self.changePage(1, self.ControlBtn))
+        #self.SensorBtn.clicked.connect(lambda: self.changePage(2, self.SensorBtn))
+        self.LoginBtn.clicked.connect(lambda: self.changePage(1, self.LoginBtn))
+        self.LogoutBtn.clicked.connect(lambda: self.changePage(0, self.DashboardBtn))
+        self.SettingsBtn.clicked.connect(lambda: self.changePage(2, self.SettingsBtn))
+
+        # 초기 화면을 대시보드 페이지로 설정
+        self.stackedWidget.setCurrentIndex(0)
+        self.changePage(0, self.DashboardBtn)
+
+        # 다이얼 설정
+        self.dial_2.setMinimum(0)
+        self.dial_2.setMaximum(7)
+        self.dial_2.valueChanged.connect(self.on_dial_change)
+        # 다이얼 슬라이더 조작 시 페이지 전환 방지
+        self.dial_2.sliderPressed.connect(lambda: None)
+        self.set_dial_2_color("gray")  # 초기 색상 설정
 
         # 각 버튼의 아이콘 초기 설정
         self.on_off_fan.setIcon(QIcon(":/off.png"))
@@ -309,32 +391,36 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.set_dial_2_color("gray")  # 초기 색상 설정
 
 
-        # Arduino connection status
 
+
+            # SET ATTRIBUTE PROPERTY
+        # Arduino connection status 
         self.le_connection_status.setText("Connecting to Arduino...")
-        # 그래프가 들어갈 attribute 생성
+    
+        # 그래프가 들어가 attribute 생성
         self.humidity_canvas = pg.GraphicsLayoutWidget()
         # PyQt에서 만든 attribute에 삽입
         self.wdg_humidity.setLayout(QVBoxLayout())
         self.wdg_humidity.layout().addWidget(self.humidity_canvas)
 
-        self.temperature_canvas = pg.GraphicsLayoutWidget()
+        self.temperature_canvas = pg.GraphicsLayoutWidget()             
         self.wdg_temperature.setLayout(QVBoxLayout())
         self.wdg_temperature.layout().addWidget(self.temperature_canvas)
 
         self.HumidityPlot = self.humidity_canvas.addPlot()
-        self.HumidityPlot.setXRange(0, 20)
-        self.HumidityPlot.setYRange(0, 100)
-        self.HumidityPlotLine = self.HumidityPlot.plot(pen='b')  # 그래프 라인만 따로 업데이트
+        self.HumidityPlot.setXRange(0,20)
+        self.HumidityPlot.setYRange(0,100)
+        self.HumidityPlotLine = self.HumidityPlot.plot(pen= 'b') # 그래프라인만 따로 update 되기 떄문에
 
         self.temperaturePlot = self.temperature_canvas.addPlot()
-        self.temperaturePlot.setXRange(0, 20)
-        self.temperaturePlot.setYRange(0, 30)
-        self.temperaturePlotLine = self.temperaturePlot.plot(pen='g')  # 그래프 라인만 따로 업데이트
+        self.temperaturePlot.setXRange(0,20)
+        self.temperaturePlot.setYRange(0,30)
+        self.temperaturePlotLine = self.temperaturePlot.plot(pen= 'g') # 그래프라인만 따로 update 되기 떄문에
 
         self.x = np.arange(20)  # x range 20으로 고정
-        self.temperature_data = np.zeros(20)  # array로 저장
+        self.temperature_data = np.zeros(20) # array로 저장
         self.humidity_data = np.zeros(20)
+
 
         self.temperature_str = "0"
         self.humidity_str = "0"
@@ -343,7 +429,8 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
 
         self.temperature = 0
         self.humidity = 0
-        self.soilhumidity = 0
+        self.soilhumidity = 0#self.ControlBtn.clicked.connect(lambda: self.changePage(1, self.ControlBtn))
+        #self.SensorBtn.clicked.connect(lambda: self.changePage(2, self.SensorBtn))
         self.waterlevel = 0
         self.nutritionwaterlevel = 0
         self.mapped_waterlevel = 0
@@ -352,19 +439,15 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.normal_count = 0
         self.abnormal_count = 0
 
+
         # 업데이트 주기
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_plot)
-        self.timer.start(100)  # 100 밀리초마다 업데이트
+        self.timer.start(2000)
 
-        # GUI Read
-        # 그냥 print 하는 함수 사용
-        self.dial_2.valueChanged.connect(self.dial_value_status)
 
-        self.dial_value = self.dial_2.value()
-        serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
 
-    # DeepLearning
+    #DeepLearing
     def closeEvent(self, event):
         # 스레드 정지 및 자원 해제
         self.detection_thread.stop()
@@ -374,68 +457,93 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         # 이미지 레이블에 업데이트
         self.image_label.setPixmap(QPixmap.fromImage(qt_image))
 
+
     def update_detection_data(self, detection_array):
         # 검출된 객체 정보를 업데이트
         self.detection_data = detection_array
+        
 
-    def find_normal_and_abnormal(self):
-        normal_count_ = 0
+    def find_normal_and_abnormal (self):
+        normal_count_ =0
         abnormal_count_ = 0
         for dictionary in self.detection_data:
             if dictionary["label"] == "normal":
-                normal_count_ += 1
-            else:
-                abnormal_count_ += 1
-        self.normal_count = normal_count_
+                normal_count_ +=1
+            else :
+                abnormal_count_ +=1
+        self.normal_count =  normal_count_ 
         self.abnormal_count = abnormal_count_
+        
 
-    def send_data_to_arduinoSubData(self, data):  # reset 버튼에서 호출
+
+    def send_data_to_arduinoSubData(self, data): # reset 버튼에서 호출
         data_str = str(data) + "\n"  # 데이터 뒤에 줄바꿈 추가 (아두이노에서 한 줄 단위로 읽을 수 있도록)
         self.arduinoSubData.write(data_str.encode())  # 데이터를 인코딩하여 전송
 
-    # 별도 스레드에서 시리얼 데이터 읽기
-    def read_serial_data(self):
-        while True:
-            # arduinoSubData에서 데이터 읽기
-            data2 = self.arduinoSubData.readline().decode("utf-8").strip()
-            if data2:
-                print("data2: ", data2)
-                try:
-                    state = data2.split("Security:")[1].strip()
-                    print("data2 split", state)
-                    if state == "2":
-                        self.security_state = True
-                    else:
-                        self.security_state = False
-                except (ValueError, IndexError):
-                    print("data error:", data2)
+
+    # GUI Graph Plot 
+    def read_arduino_data(self):
+        if self.arduinoSubData.in_waiting > 0:   # 아두이노 1에서
+            
+            data2 = self.arduinoSubData.readline().decode("utf-8").strip() # 데이터를 받음
+            print("data2",data2)
+
+            try :
+                # 아두이노 1에서 받은데이터에
+                #state = data2.split("Security:")[1].split("\n")[0].strip()
                 
+                state = data2[-1:]
+                print ("data2 split",state)
+                if state == "2":              # 상태값이 2일경우 보안 on 상태
+                    self.security_state = True
+                else :                      # 상태값이 0이나 1일경우 보안 off 상태
+                    self.security_state = False
+            except (ValueError, IndexError):
+                print("data error")
 
-            # arduinoMainData에서 데이터 읽기
+
+        if self.arduinoMainData.in_waiting > 0: # 아두이노 2에서
             data = self.arduinoMainData.readline().decode('utf-8').strip()
-            if data:
-                print("data", data)
-                try:
-                    if "Temperature:" in data and "Humidity:" in data and 'Water Level:' in data and 'Nutrition Water Level:' in data:
-                        self.temperature_str = data.split("Temperature:")[1].split(",")[0].strip()
-                        self.humidity_str = data.split("Humidity:")[1].split(",")[0].strip()
-                        self.waterlevel_str = data.split("Water Level:")[1].split(",")[0].strip()
-                        self.nutritionwaterlevel_str = data.split("Nutrition Water Level:")[1].split(",")[0].strip()
+            try:
+                if "Temperature:" in data and "Humidity:" in data and 'Water Level:' in data and 'Nutrition Water Level:' in data:
+                    self.temperature_str = data.split("Temperature:")[1].split(",")[0].strip()
+                    self.humidity_str = data.split("Humidity:")[1].split(",")[0].strip()
+                    self.waterlevel_str = data.split("Water Level:")[1].split(",")[0].strip()
+                    self.nutritionwaterlevel_str = data.split("Nutrition Water Level:")[1].split(",")[0].strip()
 
-                        # 값 변환
-                        self.temperature = int(self.temperature_str)
-                        self.humidity = int(self.humidity_str)
-                        self.soilhumidity = int(self.humidity_str)
-                        self.waterlevel = int(self.waterlevel_str)
-                        self.mapped_waterlevel = int(((self.waterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
-                        self.nutritionwaterlevel = int(self.nutritionwaterlevel_str)
-                        self.mapped_nutritionwaterlevel = int(((self.nutritionwaterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
-                except (ValueError, IndexError):
-                    print("Data format error:", data)
-            time.sleep(0.1)  # CPU 사용량을 낮추기 위해 약간의 대기 시간을 추가
+                    # Convert values
+                    self.temperature = int(self.temperature_str)
+                    self.humidity = int(self.humidity_str)
+                    self.soilhumidity = int(self.humidity_str)
+                    self.waterlevel = int(self.waterlevel_str)
+                    self.mapped_waterlevel = int(((self.waterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
+                    self.nutritionwaterlevel = int(self.nutritionwaterlevel_str)
+                    self.mapped_nutritionwaterlevel = int(((self.nutritionwaterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
+            except (ValueError, IndexError):
+                print("Data format error:", data) 
+
+            try:
+                self.arduinoMainData = serial.Serial(main_usd_port, 9600)
+                self.le_connection_status.setText("Connected to Arduino")
+            except SerialException:
+                self.arduinoMainData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
+                self.le_connection_status.setText("Arduino connection failed")
+                print("Failed to connect to Arduino")
+
+            print(data)
+        else:
+            self.arduinoMainData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
+        
 
     def update_plot(self):
+        self.read_arduino_data()  # Call data-reading function
         self.find_normal_and_abnormal()
+
+
+        #print("normal count = ", self.normal_count)
+        #print("abnormal count = ", self.abnormal_count)
+        print("security state = ", self.security_state)
+
 
         # Update plot data
         self.temperature_data = np.roll(self.temperature_data, -1)
@@ -457,26 +565,16 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.HumidityPlotLine.setData(self.x, self.humidity_data)
 
         farm_table = SmartFarmTable()
-        current_time = time.time()
-        if current_time - self.last_data_append_time >= 1.0:  # 1초마다 데이터 추가
-            farm_table = SmartFarmTable()
-            farm_table.append(self.mapped_waterlevel, self.mapped_nutritionwaterlevel,
-                              self.soilhumidity, self.humidity, self.temperature,
-                              self.security_state, self.normal_count, self.abnormal_count)
-            self.last_data_append_time = current_time
-
-
-
-    #######################################################################################로그인 및 gui관련 함수
-
+        farm_table.append(self.mapped_waterlevel , self.mapped_nutritionwaterlevel, self.soilhumidity, self.humidity, self.temperature , self.security_state , self.normal_count , self.abnormal_count )
 
     def closeEvent(self, event):
         self.arduinoMainData.close()
-        self.arduinoSubData.close()
         self.cap.release()
         event.accept()
 
-    # GUI function
+
+     #GUI function
+
     def toggle_device(self, device):
         """각 장치의 on/off 상태를 전환합니다."""
         if device == "fan":
@@ -609,7 +707,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         msg.setWindowTitle("수정 성공")
         msg.setText(f"{user_id}의 비밀번호가 수정되었습니다.")
         msg.exec_()
-
+        
         self.load_data()  # 새로고침
 
     def delete_user(self):
@@ -622,7 +720,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         msg.setWindowTitle("삭제 성공")
         msg.setText(f"{user_id}가 삭제되었습니다.")
         msg.exec_()
-
+        
         self.load_data()  # 새로고침
 
     def load_selected_user(self, row, column):
@@ -634,13 +732,13 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
     def on_dial_change(self, value):
         """다이얼 값에 따라 색상을 변경합니다."""
         if value == 0:
-            self.set_dial_2_color("gray") # Off
+            self.set_dial_2_color("gray")
         elif value in {1, 2, 3}:
-            self.set_dial_2_color("blue") # Cooling
+            self.set_dial_2_color("blue")
         elif value in {4, 5, 6}:
-            self.set_dial_2_color("red") # Heating
+            self.set_dial_2_color("red")
         elif value == 7:
-            self.set_dial_2_color("yellow") # Auto
+            self.set_dial_2_color("yellow")
 
     def set_dial_2_color(self, color):
         """다이얼에 고정 배경색을 적용합니다."""
@@ -650,7 +748,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
             "red": "#8b0000",
             "yellow": "#ffd700"
         }
-
+        
         selected_color = color_styles.get(color, "#808080")  # 색상이 없을 경우 기본 회색으로 설정
 
         # 다이얼에 색상 스타일을 직접 적용
@@ -660,13 +758,12 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                 border-radius: {self.dial_2.width() // 2}px;
             }}
         """)
-
-    def dial_value_status(self, value):
-        self.dial_value = value
-        print(f"Dial value: {self.dial_value}")
-
+    #self.ControlBtn.clicked.connect(lambda: self.changePage(1, self.ControlBtn))
+        #self.SensorBtn.clicked.connect(lambda: self.changePage(2, self.SensorBtn))
 if __name__ == '__main__':
-    App = QApplication(sys.argv)
+    App = QApplication(sys. argv)
+    # set_theme(App, theme='dark')
     myWindow = SunnyMainWindow()
     myWindow.show()
     sys.exit(App.exec())
+
