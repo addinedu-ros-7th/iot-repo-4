@@ -30,6 +30,7 @@ int Humidity = 0;
 int Water_level = 0;
 int Nutri_Water_level = 0;
 int Moisture = 0;
+int Moisture_mapped = 0;
 
 bool isCoolingPenActive = false;
 bool isServoActive = false;
