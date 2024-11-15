@@ -74,7 +74,7 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
 
         self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
         
-            # SET ATTRIBUTE PROPERTY
+        # SET ATTRIBUTE PROPERTY
 
         # 초기 아이콘 상태 설정
         self.is_toggle_on = False

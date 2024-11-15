@@ -63,8 +63,8 @@ ui_file_path = os.path.join(current_dir, 'interface03.ui')
 
 form_class = uic.loadUiType(ui_file_path)[0]
 
-main_usd_port = "/dev/ttyACM0"  # 메인 Arduino 포트 (예: "/dev/ttyACM0")
-sub_usd_port = "/dev/ttyACM1"
+main_usd_port = "/dev/ttyACM1"  # "/dev/ttyACM0"
+sub_usd_port =  "/dev/ttyACM0" # "/dev/ttyACM1"
 
 # main_usd_port와 sub_usd_port를 사용하여 Arduino에 연결
 print(f"Main USB Port: {main_usd_port}")
