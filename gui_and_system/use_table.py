@@ -5,6 +5,7 @@ import time
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from datetime import datetime, timedelta
+import bcrypt
 
 load_dotenv()
 
@@ -126,36 +127,37 @@ class UserTable():
         sql ="""
         CREATE TABLE IF NOT EXISTS USER(
             ID VARCHAR(32) PRIMARY KEY,
-            PW VARCHAR(32)
+            PW VARCHAR(60)  -- bcrypt 해시 길이에 맞게 변경
         );
         """
         self.cursor.execute(sql)
         self.conn.commit()
 
-        # 기본 admin 계정이 없으면 추가
-        self.cursor.execute("SELECT * FROM USER")
+        # 기본 admin 계정 추가 (해시된 비밀번호 사용)
+        self.cursor.execute("SELECT * FROM USER WHERE ID = 'admin'")
         if not self.cursor.fetchall():
-            self.cursor.execute("INSERT INTO USER VALUES ('admin', 'admin')")
+            hashed_pw = bcrypt.hashpw('admin'.encode('utf-8'), bcrypt.gensalt())
+            self.cursor.execute("INSERT INTO USER (ID, PW) VALUES (%s, %s)", ('admin', hashed_pw))
             self.conn.commit()
 
     def login(self, id, pw):
         # USER 테이블에서 사용자 로그인 확인
         # ID와 PW가 일치하는 사용자가 있는지 조회합니다.
-        self.cursor.execute("SELECT * FROM USER WHERE ID = %s AND PW = %s", (id, pw))
-        if self.cursor.fetchall():
-            slack_token = os.getenv("SLACK_TOKEN")
-            client = WebClient(token=slack_token)
-            try:
-                response = client.chat_postMessage(
-                    channel="C07UFQ6DTRD", #채널 id를 입력합니다.
-                    text=f"""관리자가 로그인 했습니다."""
-                )
-            except SlackApiError as e:
-                print(e)
-                assert e.response["error"]
-
-            return True
-            
+        self.cursor.execute("SELECT PW FROM USER WHERE ID = %s", (id,))
+        result = self.cursor.fetchall()
+        if result:
+            stored_pw = result[0]
+            if bcrypt.checkpw(pw.encode('utf-8'), stored_pw.encode('utf-8')):
+                slack_token = os.getenv("SLACK_TOKEN")
+                client = WebClient(token=slack_token)
+                try:
+                    response = client.chat_postMessage(
+                        channel="C07UFQ6DTRD",  # 채널 ID를 입력합니다.
+                        text=f"""관리자가 로그인 했습니다."""
+                    )
+                except SlackApiError as e:
+                    print(e)
+                return True
         return False
 
     def append_user(self, id, pw):
@@ -163,7 +165,8 @@ class UserTable():
         # 이미 동일한 ID가 존재하는 경우 False를 반환하고, 그렇지 않으면 추가 후 True를 반환합니다.
         self.cursor.execute("SELECT * FROM USER WHERE ID = %s", (id,))
         if not self.cursor.fetchall():
-            self.cursor.execute("INSERT INTO USER (ID, PW) VALUES (%s, %s)", (id, pw))
+            hashed_pw = bcrypt.hashpw(pw.encode('utf-8'), bcrypt.gensalt())
+            self.cursor.execute("INSERT INTO USER (ID, PW) VALUES (%s, %s)", (id, hashed_pw))
             self.conn.commit()
             return True
         return False
@@ -184,8 +187,9 @@ class UserTable():
             return False
 
     def update_user(self, id, pw):
-        #유저 데이터를 수정합니다.
-        self.cursor.execute("UPDATE USER SET PW = %s WHERE ID = %s", (pw, id))
+        # 비밀번호 변경 시 해싱
+        hashed_pw = bcrypt.hashpw(pw.encode('utf-8'), bcrypt.gensalt())
+        self.cursor.execute("UPDATE USER SET PW = %s WHERE ID = %s", (hashed_pw, id))
         self.conn.commit()
 
     def delete_user(self, id):
@@ -200,42 +204,3 @@ class UserTable():
         self.cursor.close()
         self.conn.close()
 
-
-"""
-# 테스트 코드 예제
-if __name__ == "__main__":
-    # SmartFarmTable 클래스 테스트
-    farm_table = SmartFarmTable()
-    
-    # 샘플 데이터 추가
-    farm_table.append(80, 60, 70, 45, 25, True, 3, 5)
-    time.sleep(1)
-    farm_table.append(85, 65, 72, 50, 24, False, 2, 6)
-    
-    # 최근 2개 데이터 가져오기
-    latest_data = farm_table.get(2)
-    print("최근 데이터:", latest_data)
-    
-    # 연결 해제
-    farm_table.disconnect()
-
-    # UserTable 클래스 테스트
-    user_table = UserTable()
-    
-    # 기본 admin 계정으로 로그인 테스트
-    login_success = user_table.login('admin', 'admin')
-    print("admin 계정 로그인 성공:", login_success)
-    
-    # 새로운 사용자 추가
-    user_table.append_user('user1', 'password1')
-    user_table.append_user('user2', 'password2')
-    
-    # 새로운 사용자 로그인 테스트
-    login_user1 = user_table.login('user1', 'password1')
-    login_user2 = user_table.login('user2', 'password2')
-    print("user1 로그인 성공:", login_user1)
-    print("user2 로그인 성공:", login_user2)
-    
-    # 연결 해제
-    user_table.disconnect()
-"""
