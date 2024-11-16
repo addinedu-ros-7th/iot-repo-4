@@ -1,0 +1,390 @@
+[33mcommit d9dd9a4085fa0bd7f5e4e30411ca8f66bc6b1abb[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mdev[m[33m)[m
+Author: mizan <mizan05j@gmail.com>
+Date:   Sat Nov 16 17:56:40 2024 +0900
+
+    Added hashing in use_table.py and implemented alert in main.py for Arduino connection timeout exceeding 5 seconds, Readme table edited
+
+[33mcommit 763d1dedba231aeb9127c2b181e1bc6e47a718aa[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Fri Nov 15 16:29:42 2024 +0900
+
+    d
+
+[33mcommit 500e45826d47c8e71b333dc12d6b024d01202e93[m
+Merge: 1ef318c ff17b93
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Fri Nov 15 16:24:46 2024 +0900
+
+    Merge branch 'main' of https://github.com/addinedu-ros-7th/iot-repo-4
+
+[33mcommit 1ef318c8ec9331f8c416a96579c7e2d9d5437c1d[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Fri Nov 15 16:24:35 2024 +0900
+
+    ad
+
+[33mcommit ff17b937d4f85b1590488397a5c5d3e8ab5362ff[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Fri Nov 15 15:45:16 2024 +0900
+
+    SUN GUI soil moisture lineedit added
+
+[33mcommit 2ea22bb303f05b5b80c26578d81a51380d6b93f9[m
+Merge: 8a58913 96d6f68
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Fri Nov 15 14:34:40 2024 +0900
+
+    Merge branch 'main' of https://github.com/addinedu-ros-7th/iot-repo-4
+
+[33mcommit 8a589139a6d3dfab304aa8f99a4b396019d94aa4[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Fri Nov 15 14:32:31 2024 +0900
+
+    SUN pump motor logic added to test.ino
+
+[33mcommit 96d6f6871ea71a2b2f86d3bf665739b912dd0040[m
+Merge: 56f2361 41456c6
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Fri Nov 15 13:58:34 2024 +0900
+
+    Merge branch 'main' of https://github.com/addinedu-ros-7th/iot-repo-4
+
+[33mcommit 56f2361facdb9c3590e3fb76bcd81c756281a82b[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Fri Nov 15 13:58:32 2024 +0900
+
+    m
+
+[33mcommit 41456c6f41105f38aa72c5c69e113a166fb6cf94[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Fri Nov 15 12:13:18 2024 +0900
+
+    SUN gyro.ino file added
+
+[33mcommit 11e3fb291893b5462d594deefdd8965345de0f52[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Fri Nov 15 12:10:57 2024 +0900
+
+    SUN test.ino moisture mapped init
+
+[33mcommit e3c72982fbd0b7a85f462cdbfe5ce47cf9eee4bd[m
+Merge: 742fd5d 3a1ef4a
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Fri Nov 15 12:01:31 2024 +0900
+
+    Merge branch 'main' of https://github.com/addinedu-ros-7th/iot-repo-4
+
+[33mcommit 742fd5d412bacd454f12ed638a6a72d5f34737be[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Fri Nov 15 12:00:47 2024 +0900
+
+    a
+
+[33mcommit 3a1ef4a9cbe80fd2a2aa6c90812acba96c1da79f[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Fri Nov 15 11:30:04 2024 +0900
+
+    Moisture sensor Added to test.ino
+
+[33mcommit 455de851f82c5e1d0373f22e80028d0a17d43633[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Fri Nov 15 09:37:30 2024 +0900
+
+    ino file moved
+
+[33mcommit 393ab8105b6beb68d78fc2f7cba710cdb5d07110[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Thu Nov 14 19:56:11 2024 +0900
+
+    test ino file move to control_board1
+
+[33mcommit b1b51d063a5f7f3d81404a0fe8df400abd4e221f[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Thu Nov 14 19:50:59 2024 +0900
+
+    new thread appended for read serial, main.py appended, files deleteded
+
+[33mcommit aa1bd18002130960835d33ead3524f80c79b8207[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Thu Nov 14 17:54:53 2024 +0900
+
+    Your commit message
+
+[33mcommit 342d5cbf1c527324c0db407882d8add5de764100[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 17:07:08 2024 +0900
+
+    SUN commit
+
+[33mcommit 1453a96789164f8aa79adf17305fde0c0b927335[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 17:05:44 2024 +0900
+
+    SUN commit
+
+[33mcommit 118d7d214440aa9787e4e00018f8b13da869f564[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 17:05:25 2024 +0900
+
+    Update .gitignore
+
+[33mcommit caa62df2f106b366ccbb84a078e4030f21d44b8c[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 17:03:58 2024 +0900
+
+    SUN commit
+
+[33mcommit 041744f556532375681084bbb3b2949134d9cb21[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 16:26:59 2024 +0900
+
+    SUN commit
+    
+    src code combined
+
+[33mcommit bfdb5f6b2711c3c812430a9911a9708bcaae9b80[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 15:40:55 2024 +0900
+
+    SUN commited
+
+[33mcommit 0c3dc5b11fb9bc4e9963e560dcf20f1963d09969[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 14:57:50 2024 +0900
+
+    SUN commit
+
+[33mcommit ad3980072e1310855de6098726bb44c43b9cb276[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 14:49:47 2024 +0900
+
+    SUN commited
+
+[33mcommit b331faba161908ec004fd906ceb0f4a5577b9503[m
+Author: lentojieun <eeasdf123@gmail.com>
+Date:   Thu Nov 14 14:37:17 2024 +0900
+
+    UI updated
+
+[33mcommit 0a8099a04c3bb2112cf4ef8ccb01281e9dfe1e18[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 11:12:06 2024 +0900
+
+    SUN commit
+
+[33mcommit 8186f198223da89d7a344b6b52fdb39381c23972[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 10:37:02 2024 +0900
+
+    SUN commit
+    
+    update test.ino
+
+[33mcommit 4ecd786488edf35c272e1b559bd903226deca980[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 10:34:27 2024 +0900
+
+    SUN commit
+    
+    add nutrition water level
+
+[33mcommit 1df5d89f61545f2550ebe20b3256afaca1d6d998[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Thu Nov 14 10:07:59 2024 +0900
+
+    SUN commit
+    
+    .DS_store gitignore
+
+[33mcommit c376a0258788e5de190ee8a3e10621b33f71ca3a[m
+Author: kim-sunwoong <sunwoong.kim831@gmail.com>
+Date:   Thu Nov 14 09:59:39 2024 +0900
+
+    SUN test.py deleted
+
+[33mcommit 36bf74149e9cd7862aa7e1459f2b51886cf390e8[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 21:03:04 2024 +0900
+
+    .
+
+[33mcommit 03d7059425a1f2d128c566a8ecef430a7260d6dc[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 18:00:44 2024 +0900
+
+    requirement
+
+[33mcommit 50814928d271008cfd09e2d76d7acc103dc7c010[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 17:57:27 2024 +0900
+
+    .
+
+[33mcommit afc77e9442f787b9a7a0475994cc8bdc56d4a8ac[m
+Merge: c3155db bf6f949
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 17:56:05 2024 +0900
+
+    Merge branch 'main' of https://github.com/addinedu-ros-7th/iot-repo-4
+
+[33mcommit bf6f94977f6158a61809371e24e5840196645781[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Wed Nov 13 17:49:03 2024 +0900
+
+    SUN commit
+
+[33mcommit c3155db2f005e4e6e976da7726d2f53bbf048bc0[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 17:47:08 2024 +0900
+
+    gitignore
+
+[33mcommit 083f9b74a9f3ce3a6e59dee3f8cfc465a033004f[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Wed Nov 13 17:40:57 2024 +0900
+
+    SUN_commited
+
+[33mcommit dbff2b5e2770c24521ad7de20c5b55ab6138e54d[m
+Author: sub010 <bulky-tapirs.0p@icloud.com>
+Date:   Wed Nov 13 16:11:11 2024 +0900
+
+    final test file commited
+
+[33mcommit 00e44dbbd0a0f0a1d47f5dcf7eac0e20bc4048fe[m
+Author: kim-sunwoong <sunwoong.kim831@gmail.com>
+Date:   Wed Nov 13 15:26:12 2024 +0900
+
+    test folder commited
+
+[33mcommit d7e5e7f5cd39e1d04311baddbc9943fccbb45f8e[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 14:55:51 2024 +0900
+
+    .
+
+[33mcommit c2616be7d5e8be4dbe4c5cf44cef5567e28757f3[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 14:51:04 2024 +0900
+
+    files
+
+[33mcommit dc5206ddfe9ebeb0bfa893d323f1c2a968dd589b[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 14:46:22 2024 +0900
+
+    remove best.py
+
+[33mcommit cf19509c6c2cc6ca7ba9e20e468037bd588bf7ff[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Wed Nov 13 14:42:12 2024 +0900
+
+    Add large files to .gitignore
+
+[33mcommit 16dac31bbb5e81e237e1d1152b2797895e0db891[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Tue Nov 12 19:47:34 2024 +0900
+
+    Update README.md
+
+[33mcommit ab86cf0a1d9886099a3e32a0ddb7dfee23b933d2[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Tue Nov 12 19:16:57 2024 +0900
+
+    remove things
+
+[33mcommit 220c992be25f419b831a8830bc056f91661b5470[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Tue Nov 12 15:46:55 2024 +0900
+
+    use table update
+
+[33mcommit 8eddc172761db533f5a97de55b3e4377cd1939bf[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Tue Nov 12 15:44:39 2024 +0900
+
+    use table update
+
+[33mcommit d15e4bd9fa004e7f8d02d8befd6381d793f14f32[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Tue Nov 12 14:32:18 2024 +0900
+
+    Update pyqt.py
+
+[33mcommit 40e84f41262639ea8fc2d6e26000ee6f0ff75b5b[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Tue Nov 12 14:29:35 2024 +0900
+
+    .
+
+[33mcommit e51513837e9a6ab3fdf48bf2bcb44bee8bd5607c[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Tue Nov 12 11:16:37 2024 +0900
+
+    Update README.md
+
+[33mcommit 06f8e7ae2ab6fef46482e3756e441faacd465790[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Tue Nov 12 11:09:48 2024 +0900
+
+    init project
+
+[33mcommit 0ecf04d0625ddc86afed5e0aaf3222f9c55ac7ea[m
+Author: mizan <68957804+mizan0515@users.noreply.github.com>
+Date:   Tue Nov 12 00:30:22 2024 +0900
+
+    Update README.md
+
+[33mcommit ccbbcd49564118aaa9d7db56e30bb4d88fee593e[m
+Author: mizan <68957804+mizan0515@users.noreply.github.com>
+Date:   Tue Nov 12 00:25:28 2024 +0900
+
+    Update README.md
+
+[33mcommit cf1ad396bc85f4616c2c3df4f5c98467ed5038e3[m
+Author: mizan <68957804+mizan0515@users.noreply.github.com>
+Date:   Tue Nov 12 00:24:48 2024 +0900
+
+    Update README.md
+
+[33mcommit 1019655adb39544772ff89160906da275330a904[m
+Author: mizan <68957804+mizan0515@users.noreply.github.com>
+Date:   Mon Nov 11 23:40:53 2024 +0900
+
+    Update README.md
+
+[33mcommit 759a0a753c7ad8b502f2de1ecbc9bd0ad060fe3a[m
+Author: mizan <68957804+mizan0515@users.noreply.github.com>
+Date:   Mon Nov 11 23:38:10 2024 +0900
+
+    Update README.md
+
+[33mcommit e5e7b028c251beb9ebb7c7aa5afb469d6a75df04[m
+Author: mizan <68957804+mizan0515@users.noreply.github.com>
+Date:   Mon Nov 11 23:30:29 2024 +0900
+
+    readme update2
+
+[33mcommit 4182ba913c9b79320fce043c1382ed5ffa6b9533[m
+Author: mizan <68957804+mizan0515@users.noreply.github.com>
+Date:   Mon Nov 11 23:01:20 2024 +0900
+
+    readme edit1
+
+[33mcommit 65cf3cbbaf2375e8a0a992cb7bde07cc8595a99d[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Mon Nov 11 18:55:49 2024 +0900
+
+    init commit
+
+[33mcommit ee2ee9bf885f375e136cf77e6ccdcc5cdc584bc4[m
+Author: mizan0515 <mizan05j@gmail.com>
+Date:   Mon Nov 11 18:50:28 2024 +0900
+
+    Initial commit
+
+[33mcommit fc207d92da03448a11e9ad877f1b0f24589ae8d3[m
+Author: mizan <68957804+mizan0515@users.noreply.github.com>
+Date:   Mon Nov 11 17:43:43 2024 +0900
+
+    Initial commit
