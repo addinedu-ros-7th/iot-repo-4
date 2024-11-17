@@ -420,7 +420,15 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                             #state = data2.split("Security:")[1].strip()
                             state =data2[-1:]
                             print("data2 split", state)
-                            self.security_state = state == "2"
+                            if state == "2":
+                                self.security_state = True
+                                self.security_button.setEnabled(False)
+                            elif state== "1" :
+                                self.security_state = False
+                                self.security_button.setEnabled(True)
+                            else :
+                                self.security_state = False
+                                self.security_button.setEnabled(False)
                     except (ValueError, IndexError):
                         print("data error:", data2)
                 else:
