@@ -7,9 +7,17 @@
 #define RST_PIN         9          // 리셋 핀 설정
 #define SS_PIN          10         // SS(슬레이브 선택) 핀 설정
 #define BUZZER          8          // 부저 핀 설정
-#define DATA_IN 3   // 데이터 입력 핀
-#define CS 4        // 칩 선택 핀
-#define CLK 5       // 클럭 핀
+
+
+#define DATA_IN1 2  // 데이터 입력 핀
+#define CLK1 4      // 클럭 핀
+#define CS1 3       // 칩 선택 핀
+#define NUM_DEVICES 2  // 연결된 매트릭스 장치 수
+
+#define DATA_IN2 5  // 데이터 입력 핀
+#define CLK2 7      // 클럭 핀
+#define CS2 6       // 칩 선택 핀
+
 #define NUM_DEVICES 2  // 연결된 도트 매트릭스 모듈의 수
 #define led 13       // LED 핀 설정 (적절한 핀 번호로 변경하세요)
 
@@ -35,12 +43,13 @@ const unsigned long cardCheckInterval = 500; // 카드 확인 간격 (밀리초)
 
 int arduinoState = 0; // 0이면 전체 꺼짐, 1이면 부저 울림 전체 꺼짐, 2면 부저 안울림 전체 켜짐
 
-LedControl lc = LedControl(DATA_IN, CLK, CS, NUM_DEVICES);
+
+LedControl lc1 = LedControl(DATA_IN1, CLK1, CS1, NUM_DEVICES);
+LedControl lc2 = LedControl(DATA_IN2, CLK2, CS2, NUM_DEVICES);
 
 
-
-void turnOnAllLeds();
-void turnOffAllLeds() ;
+void All_led_on();
+void All_led_off();
 
 
 void setup() {
@@ -57,10 +66,16 @@ void setup() {
     Wire.write(0);    
     Wire.endTransmission(true);  // MPU 초기화
 
+    // LED 매트릭스 초기화
     for (int i = 0; i < NUM_DEVICES; i++) {
-        lc.shutdown(i, false);       // 절전 모드 해제
-        lc.setIntensity(i, 8);       // 밝기 설정 (0~15)
-        lc.clearDisplay(i);          // 디스플레이 초기화
+      lc1.shutdown(i, false);  // 전원 켜기
+      lc1.setIntensity(i, 8);  // 밝기 설정 (0~15)
+      lc1.clearDisplay(i);     // 화면 초기화
+    }
+    for (int i = 0; i < NUM_DEVICES; i++) {
+      lc2.shutdown(i, false);  // 전원 켜기
+      lc2.setIntensity(i, 8);  // 밝기 설정 (0~15)
+      lc2.clearDisplay(i);     // 화면 초기화
     }
 
     delay(4); // 초기화 후 대기 (보드에 따라 필요할 수 있음)
@@ -130,7 +145,7 @@ void loop() {
     // 상태에 따른 동작
     if (arduinoState == 0) { 
         // LED 끔
-        digitalWrite(led, LOW);
+        All_led_off();
         // 부저 끔
         noTone(BUZZER);
     } else if (arduinoState == 1) {
@@ -139,10 +154,10 @@ void loop() {
             lastBuzzTime = currentMillis;  // 마지막 부저 시간 갱신
         }
         // LED 끔
-        digitalWrite(led, LOW);
+        All_led_on();
     } else if (arduinoState == 2) {
         // LED 켬
-        digitalWrite(led, HIGH);
+        All_led_on();
     }
 
     // 카드 확인을 지정된 간격마다 수행
@@ -156,7 +171,7 @@ void loop() {
             } else if (arduinoState == 1) {
                 arduinoState = 0; // 상태를 0으로 변경
             } else if (arduinoState == 2) {
-                arduinoState = 0; // 상태를 0으로 변경
+                //arduinoState = 0; // 상태를 0으로 변경
             }
             // 가드 상태에서 카드가 감지되면 상태 변경
             gyro_moved = false;
@@ -164,22 +179,21 @@ void loop() {
     }
 }
 
-void turnOnAllLeds() {
-    for (int device = 0; device < NUM_DEVICES; device++) { // 각 디바이스 반복
-        for (int row = 0; row < 8; row++) {               // 행 반복
-            for (int col = 0; col < 8; col++) {           // 열 반복
-                lc.setLed(device, row, col, true);        // LED 켜기
-            }
-        }
+
+void All_led_on() {
+  for (int device = 0; device < 1; device++) {
+    for (int row = 0; row < 8; row++) {
+      lc1.setRow(device, row, 0xFF);  // lc1의 모든 열 켜기
+      lc2.setRow(device, row, 0xFF);  // lc2의 모든 열 켜기
     }
+  }
 }
 
-void turnOffAllLeds() {
-    for (int device = 0; device < NUM_DEVICES; device++) { // 각 디바이스 반복
-        for (int row = 0; row < 8; row++) {               // 행 반복
-            for (int col = 0; col < 8; col++) {           // 열 반복
-                lc.setLed(device, row, col, false);        // LED 끄기
-            }
-        }
+void All_led_off() {
+  for (int device = 0; device < 1; device++) {
+    for (int row = 0; row < 8; row++) {
+      lc1.setRow(device, row, 0x00);  // lc1의 모든 열 끄기
+      lc2.setRow(device, row, 0x00);  // lc2의 모든 열 끄기
     }
+  }
 }
