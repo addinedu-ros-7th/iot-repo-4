@@ -207,8 +207,6 @@ class DetectionThread(QThread):
         return results
 
 
-
-
 # Main Window
 class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
     def __init__(self):
