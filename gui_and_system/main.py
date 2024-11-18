@@ -63,8 +63,8 @@ ui_file_path = os.path.join(current_dir, 'interface03.ui')
 
 form_class = uic.loadUiType(ui_file_path)[0]
 
-main_usd_port = "/dev/ttyACM0"  # "/dev/ttyACM0"
-sub_usd_port =  "/dev/ttyACM1" # "/dev/ttyACM1"
+main_usd_port = "/dev/ttyACM1"  # "/dev/ttyACM0"
+sub_usd_port =  "/dev/ttyACM0" # "/dev/ttyACM1"
 
 # main_usd_port와 sub_usd_port를 사용하여 Arduino에 연결
 print(f"Main USB Port: {main_usd_port}")
@@ -362,6 +362,8 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.dial_2.valueChanged.connect(self.dial_value_status)
 
         self.dial_value = self.dial_2.value()
+
+
         serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
 
     # DeepLearning
@@ -469,22 +471,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
     def update_plot(self):
         self.find_normal_and_abnormal()
 
-        ## 아두이노 연결 시도
-        try:
-            self.arduinoSubData = serial.Serial(sub_usd_port, 9600)
-            self.le_connection_status.setText("Connected to Arduino Sub")
-        except SerialException:
-            self.arduinoSubData = serial.Serial(sub_usd_port, 9600)  # TinkerCAD serial 가능?
-            self.le_connection_status.setText("Arduino Sub connection failed")
-            print("Failed to connect to Arduino Sub")
-
-        try:
-            self.arduinoMainData = serial.Serial(main_usd_port, 9600)
-            self.le_connection_status.setText("Connected to Arduino Main")
-        except SerialException:
-            self.arduinoMainData = serial.Serial(main_usd_port, 9600)  # TinkerCAD serial 가능?
-            self.le_connection_status.setText("Arduino Main connection failed")
-            print("Failed to connect to Arduino Main")
+        
 
         # Update plot data
         self.temperature_data = np.roll(self.temperature_data, -1)
