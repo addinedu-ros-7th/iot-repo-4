@@ -32,16 +32,10 @@ const int NUTRI_PUMP_BA = 11;
 const int NUTRI_PUMP_BB = 12;
 
 // millis SETTING
-unsigned long pre_millis = 0;
-unsigned long veryDryMillis = 0;
-unsigned long normalDryMillis = 0;
-unsigned long dryMillis = 0;
-unsigned long nutriMillis = 0;
-
-const long pumpVeryDryinterval = 5000;   // Very dry interval
-const long pumpNormalDryinterval = 3000; // Normal dry interval
-const long pumpDryinterval = 1000;       // Dry interval
-const int pumpNutriInterval = 1000;
+unsigned long previousMillis = 0;   // 마지막으로 펌프 상태를 변경한 시간
+const long onInterval = 10000;        // 3초동안 멈춤
+const long offInterval = 3000;       // 1초동안 작동
+bool pumpState = false;
 
 // VARIABLE SETUP
 int Temperature = 0;
@@ -67,8 +61,8 @@ void setup() {
   pinMode(WATER_PUMP_AB, OUTPUT);
   pinMode(NUTRI_PUMP_BA, OUTPUT);
   pinMode(NUTRI_PUMP_BB, OUTPUT);
-  servo_pin_A.attach(6);
-  servo_pin_B.attach(7);
+  servo_pin_A.attach(8);
+  servo_pin_B.attach(6);
   Serial.begin(9600);
 }
 
@@ -82,7 +76,7 @@ void loop() {
 
   // Pump Automation
   waterPump();
-  nutriPump();
+  //nutriPump();
 
   Serial.print("Humidity: ");
   Serial.print(Humidity);
@@ -96,7 +90,7 @@ void loop() {
   Serial.print(Moisture_mapped);
   Serial.println();
 
-  delay(2000);
+  delay(1000);
 
   if (Serial.available()) {
     dial_value = Serial.parseInt();
@@ -109,42 +103,25 @@ void loop() {
 }
 
 void waterPump() {
-  unsigned long cur_millis = millis();
-  if (Moisture > 10 && Moisture < 30 && cur_millis - veryDryMillis >= pumpVeryDryinterval) {
-    veryDryMillis = cur_millis;
-    runPumpNonBlocking(5000);
-  } else if (Moisture > 30 && Moisture < 50 && cur_millis - normalDryMillis >= pumpNormalDryinterval) {
-    normalDryMillis = cur_millis;
-    runPumpNonBlocking(2500);
-  } else if (Moisture > 50 && Moisture < 70 && cur_millis - dryMillis >= pumpDryinterval) {
-    dryMillis = cur_millis;
-    runPumpNonBlocking(1000);
-  }
-}
+  unsigned long currentMillis = millis();  // 현재 시간 가져오기
 
-void runPumpNonBlocking(unsigned long duration) {
-  static unsigned long pumpStartTime = 0;
-  static bool pumpActive = false;
-
-  if (!pumpActive) {
+  // 작동/정지 주기를 비교
+  if (pumpState && currentMillis - previousMillis >= onInterval) {
+    // 1초 동안 펌프를 켬
     digitalWrite(WATER_PUMP_AA, HIGH);
     digitalWrite(WATER_PUMP_AB, LOW);
-    pumpStartTime = millis();
-    pumpActive = true;
-  } else if (millis() - pumpStartTime >= duration) {
+    previousMillis = currentMillis;  // 마지막 시간 갱신
+    pumpState = false;               // 상태 변경 (정지)
+  }
+  else if (!pumpState && currentMillis - previousMillis >= offInterval) {
+    // 3초 동안 멈춤
     digitalWrite(WATER_PUMP_AA, LOW);
     digitalWrite(WATER_PUMP_AB, LOW);
-    pumpActive = false;
+    previousMillis = currentMillis;  // 마지막 시간 갱신
+    pumpState = true;                // 상태 변경 (작동)
   }
 }
 
-void nutriPump() {
-  unsigned long cur_millis = millis();
-  if (cur_millis - nutriMillis >= pumpNutriInterval) {
-    nutriMillis = cur_millis;
-    runPumpNonBlocking(5000);
-  }
-}
 
 // Additional functions remain unchanged.
 
@@ -195,7 +172,12 @@ void servoMotor() {
     servo_pin_A.write(0);
     servo_pin_B.write(0);
   }
-}
+    else if (dial_value == 4 || dial_value == 5 || dial_value == 6){
+      servo_pin_A.write(0);
+      servo_pin_B.write(0);
+    }
+  }
+
 void RGB_color() {
   if (Temperature > 1 && Temperature < 10 || dial_value == 4) {
     systemActivate = true;

@@ -404,9 +404,10 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         # GUI Read
         # 그냥 print 하는 함수 사용
         self.dial_2.valueChanged.connect(self.dial_value_status)
-
         self.dial_value = self.dial_2.value()
 
+
+        serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
 
     # DeepLearning
     def closeEvent(self, event):
@@ -1027,8 +1028,6 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
     def dial_value_status(self, value):
         self.dial_value = value
         print(f"Dial value: {self.dial_value}")
-        serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
-
 
 if __name__ == '__main__':
     App = QApplication(sys.argv)
