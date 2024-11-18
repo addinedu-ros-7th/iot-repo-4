@@ -47,7 +47,7 @@ int Moisture_mapped = 0;
 bool isCoolingPenActive = false;
 bool isServoActive = false;
 bool systemActivate = false;
-int input = 0;
+int dial_value = 0;
 
 void setup() {
   pinMode(MOTOR_PIN_A_A, OUTPUT);
@@ -98,8 +98,9 @@ void loop() {
   delay(2000);
 
   // AUTOMATION SETUP 
-  if (Serial.available() > 0) { // Writeread()
-    input = Serial.parseInt(); // Read input as an integer
+  if (Serial.available()) { // Writeread()
+    dial_value = Serial.parseInt(); // Read dial_value as an integer
+    
     isCoolingPenActive = true;
     isServoActive = true;
 
@@ -162,25 +163,25 @@ void nutriPump(){
 
 // Function Setup
 void coolingPen() {
-  if (input > 20 && input < 23 || input == 51) {
+  if (dial_value > 20 && dial_value < 23 || dial_value == 51) {
     systemActivate = true;
     analogWrite(MOTOR_PIN_A_A, 30);
     analogWrite(MOTOR_PIN_A_B, 0);
     analogWrite(MOTOR_PIN_B_A, 30);
     analogWrite(MOTOR_PIN_B_B, 0);
-  } else if (input > 23 && input < 25 || input == 52) {
+  } else if (dial_value > 23 && dial_value < 25 || dial_value == 52) {
     systemActivate = true;
     analogWrite(MOTOR_PIN_A_A, 100);
     analogWrite(MOTOR_PIN_A_B, 0);
     analogWrite(MOTOR_PIN_B_A, 100);
     analogWrite(MOTOR_PIN_B_B, 0);
-  } else if (input > 25 || input == 53) {
+  } else if (dial_value > 25 || dial_value == 53) {
     systemActivate = true;
     analogWrite(MOTOR_PIN_A_A, 250);
     analogWrite(MOTOR_PIN_A_B, 0);
     analogWrite(MOTOR_PIN_B_A, 250);
     analogWrite(MOTOR_PIN_B_B, 0);
-  } else if (input == 0) {
+  } else if (dial_value == 0) {
     systemActivate = false;
     analogWrite(MOTOR_PIN_A_A, 0);
     analogWrite(MOTOR_PIN_A_B, 0);
@@ -190,19 +191,19 @@ void coolingPen() {
 }
 
 void servoMotor() {
-  if (input > 20 && input < 23 || input == 51) {
+  if (dial_value > 20 && dial_value < 23 || dial_value == 51) {
     systemActivate = true;
     servo_pin_A.write(60);
     servo_pin_B.write(60);
-  } else if (input > 23 && input < 25 || input == 52) {
+  } else if (dial_value > 23 && dial_value < 25 || dial_value == 52) {
     systemActivate = true;
     servo_pin_A.write(120);
     servo_pin_B.write(120);
-  } else if (input > 25 || input == 53) {
+  } else if (dial_value > 25 || dial_value == 53) {
     systemActivate = true;
     servo_pin_A.write(180);
     servo_pin_B.write(180);
-  } else if (input == 0) {
+  } else if (dial_value == 0) {
     systemActivate = false;
     servo_pin_A.write(0);
     servo_pin_B.write(0);
@@ -210,22 +211,22 @@ void servoMotor() {
 }
 
 void RGB_color() {
-  if (input > 1 && input < 10 || input == 61) {
+  if (dial_value > 1 && dial_value < 10 || dial_value == 61) {
     systemActivate = true;
     analogWrite(R, 0); // Set RGB to Green
     analogWrite(G, 255);
     analogWrite(B, 0);
-  } else if (input > 10 && input < 15 || input == 62) {
+  } else if (dial_value > 10 && dial_value < 15 || dial_value == 62) {
     systemActivate = true;
     analogWrite(R, 0); // Set RGB to Cyan
     analogWrite(G, 255);
     analogWrite(B, 255);
-  } else if (input > 15 && input < 20 || input == 63) {
+  } else if (dial_value > 15 && dial_value < 20 || dial_value == 63) {
     systemActivate = true;
     analogWrite(R, 255); // Set RGB to Red
     analogWrite(G, 0);
     analogWrite(B, 0);
-  } else if (input == 0) {
+  } else if (dial_value == 0) {
     systemActivate = false;
     analogWrite(R, 255); // Set RGB to White
     analogWrite(G, 255);

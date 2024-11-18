@@ -63,12 +63,12 @@ ui_file_path = os.path.join(current_dir, 'interface03.ui')
 
 form_class = uic.loadUiType(ui_file_path)[0]
 
-main_usd_port = "/dev/ttyACM0"  # "/dev/ttyACM0"
-sub_usd_port =  "/dev/ttyACM1" # "/dev/ttyACM1"
+main_usb_port = "/dev/ttyACM0"  # "/dev/ttyACM0"
+sub_usb_port =  "/dev/ttyACM1" # "/dev/ttyACM1"
 
-# main_usd_port와 sub_usd_port를 사용하여 Arduino에 연결
-print(f"Main USB Port: {main_usd_port}")
-print(f"Sub USB Port: {sub_usd_port}")
+# main_usb_port와 sub_usb_port를 사용하여 Arduino에 연결
+print(f"Main USB Port: {main_usb_port}")
+print(f"Sub USB Port: {sub_usb_port}")
 
 class DetectionThread(QThread):
     image_update = pyqtSignal(QImage)
@@ -214,8 +214,8 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.setupUi(self)
 
         # 시리얼 포트를 타임아웃과 함께 초기화
-        self.arduinoMainData = serial.Serial(main_usd_port, 9600, timeout=0.1)
-        self.arduinoSubData = serial.Serial(sub_usd_port, 9600, timeout=0.1)
+        self.arduinoMainData = serial.Serial(main_usb_port, 9600, timeout=0.1)
+        self.arduinoSubData = serial.Serial(sub_usb_port, 9600, timeout=0.1)
 
         # 시리얼 읽기 스레드 시작
         self.serial_thread = threading.Thread(target=self.read_serial_data)
@@ -306,10 +306,6 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.dial_2.sliderPressed.connect(lambda: None)
         self.set_dial_2_color("gray")  # 초기 색상 설정
 
-
-        # Arduino connection status
-
-        self.le_connection_status.setText("Connecting to Arduino...")
         # 그래프가 들어갈 attribute 생성
         self.humidity_canvas = pg.GraphicsLayoutWidget()
         # PyQt에서 만든 attribute에 삽입
@@ -355,12 +351,29 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(100)  # 100 밀리초마다 업데이트
 
-        # GUI Read
-        # 그냥 print 하는 함수 사용
-        self.dial_2.valueChanged.connect(self.dial_value_status)
+        # ARDUINO CONNECTION STATUS
+        self.le_connection_status.setText("Connecting to Arduino...")
 
-        self.dial_value = self.dial_2.value()
-        serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
+        # GUI TO ARDUINO
+
+        # QTimer 사용해서 2초 설정
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.GUI_to_arduino) # 2초후에 timeout 실행
+        self.timer.start(2000)  #2초시작으로 설정
+
+        self.dial_value = 0 # 우선 다이얼 값 지정
+        self.dial_2.valueChanged.connect(self.dial_value_status) # 값 바뀌면 dial_value에 저장
+
+
+    def GUI_to_arduino(self):
+        serial.Serial(main_usb_port, 9600).write(str(self.dial_value).encode())  
+        self.serial_connection.write(str(self.dial_value).encode()) # string으로 보냄
+
+    def dial_value_status(self, value):
+        self.dial_value = value
+        print(f"Dial value: {self.dial_value}")
+
+
 
     # DeepLearning
     def closeEvent(self, event):
@@ -402,18 +415,18 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
 
                 ## 아두이노 연결 시도
             try:
-                self.arduinoSubData = serial.Serial(sub_usd_port, 9600)
+                self.arduinoSubData = serial.Serial(sub_usb_port, 9600)
                 self.le_connection_status.setText("Connected to Arduino Sub")
             except SerialException:
-                self.arduinoSubData = serial.Serial(sub_usd_port, 9600)  # TinkerCAD serial 가능?
+                self.arduinoSubData = serial.Serial(sub_usb_port, 9600)  # TinkerCAD serial 가능?
                 self.le_connection_status.setText("Arduino Sub connection failed")
                 print("Failed to connect to Arduino Sub")
 
             try:
-                self.arduinoMainData = serial.Serial(main_usd_port, 9600)
+                self.arduinoMainData = serial.Serial(main_usb_port, 9600)
                 self.le_connection_status.setText("Connected to Arduino Main")
             except SerialException:
-                self.arduinoMainData = serial.Serial(main_usd_port, 9600)  # TinkerCAD serial 가능?
+                self.arduinoMainData = serial.Serial(main_usb_port, 9600)  # TinkerCAD serial 가능?
                 self.le_connection_status.setText("Arduino Main connection failed")
                 print("Failed to connect to Arduino Main")
 
@@ -455,10 +468,10 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                     print("Data format error:", data)
 
             try:
-                self.arduinoMainData = serial.Serial(main_usd_port, 9600)
+                self.arduinoMainData = serial.Serial(main_usb_port, 9600)
                 self.le_connection_status.setText("Connected to Arduino")
             except SerialException:
-                self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
+                self.arduinoData = serial.Serial(main_usb_port, 9600) # TinkerCAD serial 가능?
                 self.le_connection_status.setText("Arduino connection failed")
                 print("Failed to connect to Arduino")
 
@@ -469,18 +482,18 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
 
         ## 아두이노 연결 시도
         try:
-            self.arduinoSubData = serial.Serial(sub_usd_port, 9600)
+            self.arduinoSubData = serial.Serial(sub_usb_port, 9600)
             self.le_connection_status.setText("Connected to Arduino Sub")
         except SerialException:
-            self.arduinoSubData = serial.Serial(sub_usd_port, 9600)  # TinkerCAD serial 가능?
+            self.arduinoSubData = serial.Serial(sub_usb_port, 9600)  # TinkerCAD serial 가능?
             self.le_connection_status.setText("Arduino Sub connection failed")
             print("Failed to connect to Arduino Sub")
 
         try:
-            self.arduinoMainData = serial.Serial(main_usd_port, 9600)
+            self.arduinoMainData = serial.Serial(main_usb_port, 9600)
             self.le_connection_status.setText("Connected to Arduino Main")
         except SerialException:
-            self.arduinoMainData = serial.Serial(main_usd_port, 9600)  # TinkerCAD serial 가능?
+            self.arduinoMainData = serial.Serial(main_usb_port, 9600)  # TinkerCAD serial 가능?
             self.le_connection_status.setText("Arduino Main connection failed")
             print("Failed to connect to Arduino Main")
 
@@ -511,7 +524,6 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                               self.soilhumidity, self.humidity, self.temperature,
                               self.security_state, self.normal_count, self.abnormal_count)
             self.last_data_append_time = current_time
-
 
 
     #######################################################################################로그인 및 gui관련 함수
@@ -707,10 +719,6 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                 border-radius: {self.dial_2.width() // 2}px;
             }}
         """)
-
-    def dial_value_status(self, value):
-        self.dial_value = value
-        print(f"Dial value: {self.dial_value}")
 
 if __name__ == '__main__':
     App = QApplication(sys.argv)
