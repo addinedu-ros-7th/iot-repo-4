@@ -397,14 +397,20 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         data_str = str(data) + "\n"  # 데이터 뒤에 줄바꿈 추가 (아두이노에서 한 줄 단위로 읽을 수 있도록)
         self.arduinoSubData.write(data_str.encode())  # 데이터를 인코딩하여 전송
 
+    def system_off(self):
+        data_str_for_main = str("1000") + "\n"
+        self.arduinoMainData.write(data_str_for_main.encode())
+        data_str_for_sub = str("0") + "\n"
+        self.arduinoSubData.write(data_str_for_sub.encode())
+
     # 별도 스레드에서 시리얼 데이터 읽기
     def read_serial_data(self):
         last_received_time_main = time.time()
         last_received_time_sub = time.time()
+        state1_start_time = None
 
         while True:
             current_time = time.time()
-
 
             # Arduino Sub 연결 상태 확인 및 데이터 읽기
             try:
@@ -418,19 +424,22 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                     last_received_time_sub = current_time  # 데이터 수신 시간 갱신
 
                     try:
-                        if "Security:" in data2 :
-                            #state = data2.split("Security:")[1].strip()
-                            state =data2[-1:]
+                        if "Security:" in data2:
+                            state = data2[-1:]
                             print("data2 split", state)
                             if state == "2":
                                 self.security_state = True
-                                #self.security_button.setEnabled(False)
-                            elif state== "1" :
+                                state1_start_time = None
+                            elif state == "1":
                                 self.security_state = False
-                                #self.security_button.setEnabled(True)
-                            else :
+                                if state1_start_time is None:
+                                    state1_start_time = current_time
+                                elif current_time - state1_start_time > 10:
+                                    self.system_off()  # 10초 이상 지속되면 도난으로 판단하고 system off 실행
+                                    
+                            else:
                                 self.security_state = False
-                                #self.security_button.setEnabled(False)
+                                state1_start_time = None
                     except (ValueError, IndexError):
                         print("data error:", data2)
                 else:
@@ -442,7 +451,6 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                 self.show_error_message("Arduino Sub 연결 끊어짐 오류", "Arduino Sub와의 연결이 끊어졌습니다.")
             except Exception as e:
                 print(f"Unexpected error from Arduino Sub: {e}")
-
 
 
 
@@ -485,58 +493,6 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                 print(f"Unexpected error from Arduino Main: {e}")
 
 
-            """
-            try : 
-                data2 = self.arduinoSubData.readline().decode("utf-8").strip()
-            except:
-                self.show_error_message("Arduino sub 연결 끊어짐 오류", "Arduino sub와의 연결이 끊어졌습니다.")
-
-            if data2:
-                print("data2: ", data2)
-                try:
-                    state = data2.split("Security:")[1].strip()
-                    print("data2 split", state)
-                    if state == "2":
-                        self.security_state = True
-                    else:
-                        self.security_state = False
-                except (ValueError, IndexError):
-                    print("data error:", data2)
-                
-
-            # arduinoMainData에서 데이터 읽기
-            try :
-                data = self.arduinoMainData.readline().decode('utf-8').strip()
-            except:
-                self.show_error_message("Arduino Main 연결 끊어짐 오류", "Arduino Main과의 연결이 끊어졌습니다.")
-            if data:
-                print("data", data)
-                try:
-                    if "Temperature:" in data and "Humidity:" in data and 'Water Level:' in data and 'Nutrition Water Level:' in data:
-                        self.temperature_str = data.split("Temperature:")[1].split(",")[0].strip()
-                        self.humidity_str = data.split("Humidity:")[1].split(",")[0].strip()
-                        self.waterlevel_str = data.split("Water Level:")[1].split(",")[0].strip()
-                        self.nutritionwaterlevel_str = data.split("Nutrition Water Level:")[1].split(",")[0].strip()
-
-                        # 값 변환
-                        self.temperature = int(self.temperature_str)
-                        self.humidity = int(self.humidity_str)
-                        self.soilhumidity = int(self.humidity_str)
-                        self.waterlevel = int(self.waterlevel_str)
-                        self.mapped_waterlevel = int(((self.waterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
-                        self.nutritionwaterlevel = int(self.nutritionwaterlevel_str)
-                        self.mapped_nutritionwaterlevel = int(((self.nutritionwaterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
-                except (ValueError, IndexError):
-                    print("Data format error:", data)
-
-            try:
-                self.arduinoMainData = serial.Serial(main_usd_port, 9600)
-                self.le_connection_status.setText("Connected to Arduino")
-            except SerialException:
-                self.arduinoData = serial.Serial(main_usd_port, 9600) # TinkerCAD serial 가능?
-                self.le_connection_status.setText("Arduino connection failed")
-                print("Failed to connect to Arduino")
-            """
             time.sleep(0.1)  # CPU 사용량을 낮추기 위해 약간의 대기 시간을 추가
 
     def update_plot(self):
