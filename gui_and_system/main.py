@@ -266,6 +266,13 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         # UserTable 인스턴스 생성
         self.user_table = UserTable()
 
+        # QProgressBar 값 변경 시 상태 업데이트 함수 연결   
+        self.pbar_waterlevel.valueChanged.connect(self.update_waterlevel_status)
+        self.pbar_nutwaterlevel.valueChanged.connect(self.update_nutwaterlevel_status)       
+        self.update_waterlevel_status()  # 상태 업데이트 강제 호출
+        self.update_nutwaterlevel_status()  # 상태 업데이트 강제 호출
+
+
         # 버튼 이벤트 연결
         self.loadBtn.clicked.connect(self.load_data)
         self.addBtn.clicked.connect(self.add_user)
@@ -273,10 +280,18 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.deleteBtn.clicked.connect(self.delete_user)
         self.tableWidget.cellClicked.connect(self.load_selected_user)
 
+
+
         # tableWidget 설정 및 헤더 너비 확장 모드 적용
         self.tableWidget.setColumnCount(2)
-        self.tableWidget.setHorizontalHeaderLabels(["ID", "Password"])
+        self.tableWidget.setHorizontalHeaderLabels(["아이디", "패스워드"]) # 수정
         self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # 헤더 너비 확장
+
+        # 헤더 스타일 적용 ###수정 ###
+        header = self.tableWidget.horizontalHeader()
+        header.setStyleSheet("font-size: 16px; font-weight: bold; color: #333333;") 
+
+
 
         # 메뉴 초기 상태 설정 (확장된 상태)
         self.menuExpanded = True
@@ -292,19 +307,46 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         # 로그인 버튼 클릭 이벤트 연결
         self.pushButton_login.clicked.connect(self.login)
 
+        # 엔터 키 누르면 로그인 버튼 클릭
+        self.lineEdit_password.returnPressed.connect(self.pushButton_login.click)
+
+        # 로그아웃 버튼 클릭 이벤트 연결
+        self.LogoutBtn.clicked.connect(self.logout)
+        
+
         # 버튼 클릭 시 메뉴를 확장/축소하는 이벤트 연결
         self.menuBtn.clicked.connect(self.toggleMenu)
 
         # 버튼 클릭 시 페이지 전환 및 강조 효과 적용
         self.DashboardBtn.clicked.connect(lambda: self.changePage(0, self.DashboardBtn))
         self.LoginBtn.clicked.connect(lambda: self.changePage(1, self.LoginBtn))
-        self.LogoutBtn.clicked.connect(lambda: self.changePage(0, self.DashboardBtn))
+        self.LogoutBtn.clicked.connect(lambda: self.changePage(1, self.LoginBtn))
         self.SettingsBtn.clicked.connect(lambda: self.changePage(2, self.SettingsBtn))
 
-        # 초기 화면을 대시보드 페이지로 설정
-        self.stackedWidget.setCurrentIndex(0)
-        self.changePage(1, self.DashboardBtn)
+        # shutdown_btn 클릭 이벤트 연결
+        self.shutdown_btn.clicked.connect(self.confirm_shutdown)
 
+        # 초기 화면을 로그인 페이지로 설정
+        self.stackedWidget.setCurrentIndex(1)   
+        self.changePage(1, self.LoginBtn)   
+        self.currentActiveButton = None  
+
+
+        # 초기 버튼 비활성화 및 스타일 설정
+        self.DashboardBtn.setEnabled(False)
+        self.SettingsBtn.setEnabled(False)
+        self.LogoutBtn.setEnabled(False)
+
+        style_disabled = """
+            QPushButton:disabled {
+                color: gray;
+            }
+        """
+
+        self.DashboardBtn.setStyleSheet(style_disabled)
+        self.SettingsBtn.setStyleSheet(style_disabled)
+        self.LogoutBtn.setStyleSheet(style_disabled)
+  
         # 다이얼 설정
         self.dial_2.setMinimum(0)
         self.dial_2.setMaximum(7)
@@ -580,9 +622,13 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
 
         self.menuExpanded = not self.menuExpanded
 
-    def changePage(self, index, active_button):
+    def changePage(self, index, active_button, buttons=None):
+        if buttons is None:
+            buttons = [self.DashboardBtn, self.SettingsBtn, self.LogoutBtn, self.LoginBtn]
+
         self.stackedWidget.setCurrentIndex(index)
 
+        # 버튼 스타일 정의
         default_style = """
             QPushButton {
                 background-color: #588460;
@@ -592,36 +638,45 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                 padding: 5px 10px;
                 border-radius: 5px;
             }
-        """
 
-        default_style_login = """
-            QPushButton {
-                background-color: rgb(243, 243, 243);
-                color: black;
-                border: none;
-                text-align: left;
-                padding: 5px 10px;
-                border-radius: 5px;
+            
+            QPushButton:disabled {
+                color: gray;
+            }
+
+            QPushButton#LoginBtn {
+                background-color: transparent;  /* 버튼 배경색: 투명 */
+            }
+
+            QPushButton:focus {
+                outline: none;  /* 포커스 시 테두리 제거 */
             }
         """
 
         active_style = """
             QPushButton {
-                background-color: #E6E47C;
+                background-color: #A9D6B2;
                 color: black;
                 border: none;
                 text-align: left;
                 padding: 5px 10px;
                 border-radius: 5px;
             }
+            
+
+            QPushButton:focus {
+                outline: none;  /* 포커스 시 테두리 제거 */
+            }
         """
 
-        self.DashboardBtn.setStyleSheet(default_style)
-        self.LoginBtn.setStyleSheet(default_style_login)
-        self.SettingsBtn.setStyleSheet(default_style)
+        # 버튼 스타일 업데이트
+        for button in buttons:
+            if button == active_button:
+                button.setStyleSheet(active_style)
+            else:
+                button.setStyleSheet(default_style)
 
-        active_button.setStyleSheet(active_style)
-
+        # 현재 활성화된 버튼 업데이트
         self.currentActiveButton = active_button
 
     def login(self):
@@ -629,17 +684,84 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         user_pw = self.lineEdit_password.text()
 
         msg = QMessageBox(self)
-        msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
+        msg.setStyleSheet("""QLabel { color : black; } QPushButton {color : black;}""")  # 텍스트 색상 설정
 
         if self.user_table.login(user_id, user_pw):
             msg.setWindowTitle("로그인 성공")
             msg.setText(f"{user_id}님 환영합니다!")
             msg.exec_()
-            self.stackedWidget.setCurrentIndex(0)  # 대시보드 페이지로 이동
+
+            # 버튼 활성화
+            self.DashboardBtn.setEnabled(True)
+            self.SettingsBtn.setEnabled(True)
+            self.LogoutBtn.setEnabled(True)
+
+            # LoginBtn 비활성화  #수정
+            self.LoginBtn.setEnabled(False)  #수정
+
+            # 대시보드 페이지로 이동 및 스타일 업데이트
+            self.changePage(0, self.DashboardBtn, [self.DashboardBtn, self.SettingsBtn, self.LogoutBtn, self.LoginBtn])
+
+            # LoginBtn을 투명하게 설정
+            style_transparent = """
+                QPushButton {
+                    background-color: transparent;
+                    color: black;
+                    border: none;
+                    text-align: left;
+                    padding: 5px 10px;
+                }
+            """
+            self.LoginBtn.setStyleSheet(style_transparent)
+            self.SettingsBtn.setStyleSheet(style_transparent)
+            self.LogoutBtn.setStyleSheet(style_transparent)
+
+	    # 로그인 되면 조명 자동으로 켜져 있음
+            self.on_off_light.setIcon(QIcon(":/on.png"))
+        
         else:
             msg.setWindowTitle("로그인 실패")
             msg.setText("아이디 또는 비밀번호가 잘못되었습니다.")
             msg.exec_()
+
+
+    def logout(self):
+        # 버튼 비활성화
+        self.DashboardBtn.setEnabled(False)
+        self.SettingsBtn.setEnabled(False)
+        self.LogoutBtn.setEnabled(False)
+        self.LoginBtn.setEnabled(True)
+
+        # 비활성화된 상태의 스타일 설정
+        style_disabled = """
+            QPushButton:disabled {
+                color: gray;
+                background-color: transparent;  /* 비활성화 시 회색 배경 */
+            }
+            
+            QPushButton:focus {
+                outline: none;  /* 포커스 시 테두리 제거 */
+            }            
+        """
+        self.DashboardBtn.setStyleSheet(style_disabled)
+        self.SettingsBtn.setStyleSheet(style_disabled)
+        self.LogoutBtn.setStyleSheet(style_disabled)
+
+        # 입력 필드 초기화
+        self.lineEdit_id.clear()
+        self.lineEdit_password.clear()
+        self.id_input.clear()
+        self.pw_input.clear()
+
+        # 메시지 출력 (선택 사항)
+        msg = QMessageBox(self)
+        msg.setWindowTitle("로그아웃")
+        msg.setText("로그아웃되었습니다.")
+        msg.setStyleSheet("QLabel { color: black; } QPushButton { color: black; }")
+        msg.exec_()
+
+
+
 
     def load_data(self):
         data = self.user_table.load_data()
@@ -653,31 +775,40 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         user_pw = self.pw_input.text()
 
         msg = QMessageBox(self)
-        msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
+        msg.setStyleSheet("QLabel { color : black;} QPushButton { color: black;}")  # 텍스트 색상을 검은색으로 설정
+
 
         if self.user_table.append_user(user_id, user_pw):
             msg.setWindowTitle("추가 성공")
             msg.setText(f"{user_id}가 추가되었습니다.")
             msg.exec_()
-            self.load_data()  # 새로고침
+            self.load_data()
+            self.id_input.clear()
+            self.pw_input.clear() 
         else:
             msg.setWindowTitle("추가 실패")
             msg.setText("중복된 ID가 있습니다.")
             msg.exec_()
+            self.id_input.clear()
+            self.pw_input.clear() 
+
 
     def update_user(self):
         user_id = self.id_input.text()
         user_pw = self.pw_input.text()
 
         self.user_table.update_user(user_id, user_pw)
-
+        
         msg = QMessageBox(self)
-        msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
+        msg.setStyleSheet("QLabel { color : black; } QPushButton { color: black; }")  # 텍스트 색상을 검은색으로 설정
         msg.setWindowTitle("수정 성공")
         msg.setText(f"{user_id}의 비밀번호가 수정되었습니다.")
         msg.exec_()
 
         self.load_data()  # 새로고침
+        self.id_input.clear()
+        self.pw_input.clear() 
+
 
     def delete_user(self):
         user_id = self.id_input.text()
@@ -685,12 +816,15 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.user_table.delete_user(user_id)
 
         msg = QMessageBox(self)
-        msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
+        msg.setStyleSheet("QLabel { color : black; } QPushButton { color: black; }")  # 텍스트 색상을 검은색으로 설정
         msg.setWindowTitle("삭제 성공")
         msg.setText(f"{user_id}가 삭제되었습니다.")
         msg.exec_()
 
         self.load_data()  # 새로고침
+        self.id_input.clear()
+        self.pw_input.clear()         
+
 
     def load_selected_user(self, row, column):
         selected_id = self.tableWidget.item(row, 0).text()
@@ -698,16 +832,6 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.id_input.setText(selected_id)
         self.pw_input.setText(selected_pw)
 
-    def on_dial_change(self, value):
-        """다이얼 값에 따라 색상을 변경합니다."""
-        if value == 0:
-            self.set_dial_2_color("gray") # Off
-        elif value in {1, 2, 3}:
-            self.set_dial_2_color("blue") # Cooling
-        elif value in {4, 5, 6}:
-            self.set_dial_2_color("red") # Heating
-        elif value == 7:
-            self.set_dial_2_color("yellow") # Auto
 
     def set_dial_2_color(self, color):
         """다이얼에 고정 배경색을 적용합니다."""
@@ -727,6 +851,178 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                 border-radius: {self.dial_2.width() // 2}px;
             }}
         """)
+
+    def on_dial_change(self, value):
+        """다이얼 값에 따라 아이콘 상태를 업데이트합니다."""
+        # 기본적으로 모든 아이콘 OFF로 설정
+        self.on_off_light.setIcon(QIcon(":/off.png"))
+        self.on_off_fan.setIcon(QIcon(":/off.png"))
+        self.on_off_fan2.setIcon(QIcon(":/off.png"))
+        self.on_off_window.setIcon(QIcon(":/off.png"))
+        self.on_off_window2.setIcon(QIcon(":/off.png"))
+        self.on_off_heating.setIcon(QIcon(":/off.png"))
+
+        # 조건에 따라 필요한 아이콘만 ON으로 설정
+        if value == 0:
+            self.on_off_light.setIcon(QIcon(":/on.png"))  # 조명만 켜짐
+            self.set_dial_2_color("gray")
+        elif value in {1, 2, 3}:
+            self.on_off_light.setIcon(QIcon(":/on.png"))  # 조명 켜짐
+            self.on_off_fan.setIcon(QIcon(":/on.png"))
+            self.on_off_fan2.setIcon(QIcon(":/on.png"))
+            self.on_off_window.setIcon(QIcon(":/on.png"))
+            self.on_off_window2.setIcon(QIcon(":/on.png"))  # 팬과 창문 켜짐
+            self.set_dial_2_color("blue")
+        elif value in {4, 5, 6}:
+            self.on_off_light.setIcon(QIcon(":/on.png"))
+            self.on_off_heating.setIcon(QIcon(":/on.png"))  # 난방 모드
+            self.set_dial_2_color("red")
+        elif value == 7:
+            # AUTO 모드: 모든 장치 ON
+            self.on_off_light.setIcon(QIcon(":/on.png"))
+            self.on_off_fan.setIcon(QIcon(":/on.png"))
+            self.on_off_fan2.setIcon(QIcon(":/on.png"))
+            self.on_off_window.setIcon(QIcon(":/off.png"))
+            self.on_off_window2.setIcon(QIcon(":/off.png"))
+            self.on_off_heating.setIcon(QIcon(":/off.png"))
+            self.set_dial_2_color("yellow")
+
+    def update_waterlevel_status(self):
+        water_level = self.pbar_waterlevel.value()
+
+        if water_level <= 50:
+            # waterlevel_color 색상 빨강색으로 변경
+            self.waterlevel_color.setStyleSheet("background-color: red; border-radius: 15px;")
+            # waterlevel_green_label 텍스트 "물 채워주세요"로 변경
+            self.waterlevel_text_label.setText("물 채워주세요")
+            self.waterlevel_text_label.setStyleSheet("color: red;")
+        else:
+            # waterlevel_color 색상 파랑색으로 변경
+            self.waterlevel_color.setStyleSheet("background-color: blue; border-radius: 15px;")
+            # waterlevel_green_label 텍스트 "수위 정상"으로 변경
+            self.waterlevel_text_label.setText(" 수위 정상")
+            self.waterlevel_text_label.setStyleSheet("color: blue;")
+
+
+    def update_nutwaterlevel_status(self):
+        nutwater_level = self.pbar_nutwaterlevel.value()
+
+        if nutwater_level <= 50:
+            # nutwaterlevel_color 색상 빨강색으로 변경
+            self.nutwaterlevel_color.setStyleSheet("background-color: red; border-radius: 15px;")
+            # nutwaterlevel_text_label 텍스트 "배양액 채워주세요"로 변경
+            self.nutwaterlevel_text_label.setText("  배양액 채워주세요")
+            self.nutwaterlevel_text_label.setStyleSheet("color: red;")
+        else:
+            # nutwaterlevel_color 색상 파랑색으로 변경
+            self.nutwaterlevel_color.setStyleSheet("background-color: blue; border-radius: 15px;")
+            # waterlevel_text_label_2 텍스트 "수위 정상"으로 변경
+            self.nutwaterlevel_text_label.setText("수위 정상")
+            self.nutwaterlevel_text_label.setStyleSheet("color: blue;")
+
+
+    def confirm_shutdown(self):
+        # 현재 버튼 상태 확인
+        if self.shutdown_btn.text() == "작동시작":
+            # 이미 '작동시작' 상태인 경우
+            self.shutdown_btn.setText("시스템 종료")
+            self.shutdown_btn.setStyleSheet(""" 
+                QPushButton {
+                    background-color: rgb(237, 51, 59); /* 원래 버튼 색상 */
+                    border: 2px solid #387038; /* 테두리 색 */
+                    border-radius: 10px; /* 둥근 모서리 */
+                    padding: 5px 15px;
+                    color: black;
+                    font-weight: bold;
+                }
+                QPushButton:pressed {
+                    background-color: #8FBD99; /* 눌렀을 때 배경색 */
+                    padding-top: 6px;
+                    padding-left: 6px;
+                }
+                QPushButton:focus {
+                    outline: none;  /* 포커스 시 테두리 제거 */
+                }
+            """)
+            return  # QMessageBox를 건너뜀
+
+        # QMessageBox 객체 생성
+        msg = QMessageBox(self)
+        msg.setWindowTitle("시스템 종료")
+        msg.setText("정말로 종료하겠습니까?")
+        msg.setIcon(QMessageBox.Warning)
+
+        # '예' 버튼 생성 및 추가
+        yes_button = QPushButton("예")
+        msg.addButton(yes_button, QMessageBox.YesRole)
+
+        # '아니요' 버튼 생성 및 추가
+        no_button = QPushButton("아니요")
+        msg.addButton(no_button, QMessageBox.NoRole)
+
+        # 버튼 스타일 텍스트 색상 설정
+        yes_button.setStyleSheet("""
+          QPushButton {
+                color: black;
+                background-color: #f5f5f5;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                padding: 8px 16px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+        """)
+        yes_button.setMinimumWidth(100)  # 버튼 최소 너비 설정
+        yes_button.setMinimumHeight(30)  # 버튼 최소 높이 설정
+
+        no_button.setStyleSheet("""
+            QPushButton {
+                color: black;
+                background-color: #f5f5f5;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                padding: 8px 16px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+        """)
+
+                # 스타일시트 설정
+        msg.setStyleSheet("""
+            QMessageBox QLabel {
+                color: black;  /* 텍스트 색상 검은색으로 설정 */
+            }
+        """)
+        no_button.setMinimumWidth(100)  # 버튼 최소 너비 설정
+        no_button.setMinimumHeight(30)  # 버튼 최소 높이 설정
+
+        # 메시지 박스 실행 및 선택 확인
+        msg.exec_()
+
+        # '예' 버튼이 클릭된 경우
+        if msg.clickedButton() == yes_button:
+            self.shutdown_btn.setText("작동시작")
+            self.shutdown_btn.setStyleSheet(""" 
+                QPushButton {
+                    background-color: lightgreen; /* 연두색 배경 */
+                    border: 2px solid #387038; /* 테두리 색 */
+                    border-radius: 10px; /* 둥근 모서리 */
+                    padding: 5px 15px;
+                    color: black;
+                    font-weight: bold;
+                }
+                QPushButton:pressed {
+                    background-color: #8FBD99; /* 눌렀을 때 배경색 */
+                    padding-top: 6px;
+                    padding-left: 6px;
+                }
+                QPushButton:focus {
+                    outline: none;  /* 포커스 시 테두리 제거 */
+                }                                            
+            """)
+
 
     def dial_value_status(self, value):
         self.dial_value = value
