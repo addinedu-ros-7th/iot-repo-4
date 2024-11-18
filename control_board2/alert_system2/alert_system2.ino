@@ -37,6 +37,12 @@ int arduinoState = 0; // 0이면 전체 꺼짐, 1이면 부저 울림 전체 꺼
 
 LedControl lc = LedControl(DATA_IN, CLK, CS, NUM_DEVICES);
 
+
+
+void turnOnAllLeds();
+void turnOffAllLeds() ;
+
+
 void setup() {
     Serial.begin(9600); // 시리얼 통신 시작 (속도: 9600 bps)
     while (!Serial); // 시리얼 포트가 열릴 때까지 대기
@@ -59,6 +65,8 @@ void setup() {
 
     delay(4); // 초기화 후 대기 (보드에 따라 필요할 수 있음)
 }
+
+
 
 void loop() {
     unsigned long currentMillis = millis();
@@ -152,6 +160,26 @@ void loop() {
             }
             // 가드 상태에서 카드가 감지되면 상태 변경
             gyro_moved = false;
+        }
+    }
+}
+
+void turnOnAllLeds() {
+    for (int device = 0; device < NUM_DEVICES; device++) { // 각 디바이스 반복
+        for (int row = 0; row < 8; row++) {               // 행 반복
+            for (int col = 0; col < 8; col++) {           // 열 반복
+                lc.setLed(device, row, col, true);        // LED 켜기
+            }
+        }
+    }
+}
+
+void turnOffAllLeds() {
+    for (int device = 0; device < NUM_DEVICES; device++) { // 각 디바이스 반복
+        for (int row = 0; row < 8; row++) {               // 행 반복
+            for (int col = 0; col < 8; col++) {           // 열 반복
+                lc.setLed(device, row, col, false);        // LED 끄기
+            }
         }
     }
 }
