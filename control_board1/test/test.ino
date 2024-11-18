@@ -97,10 +97,9 @@ void loop() {
 
   delay(2000);
 
-  // AUTOMATION SETUP 
-  if (Serial.available()) { // Writeread()
+  // RECEIVE GUI DIAL VALUE 
+  if (Serial.available()) { //0값이 아닌 그냥 있으면
     dial_value = Serial.parseInt(); // Read dial_value as an integer
-    
     isCoolingPenActive = true;
     isServoActive = true;
 
@@ -163,19 +162,19 @@ void nutriPump(){
 
 // Function Setup
 void coolingPen() {
-  if (dial_value > 20 && dial_value < 23 || dial_value == 51) {
+  if (dial_value > 20 && dial_value < 23 || dial_value == 1) {
     systemActivate = true;
     analogWrite(MOTOR_PIN_A_A, 30);
     analogWrite(MOTOR_PIN_A_B, 0);
     analogWrite(MOTOR_PIN_B_A, 30);
     analogWrite(MOTOR_PIN_B_B, 0);
-  } else if (dial_value > 23 && dial_value < 25 || dial_value == 52) {
+  } else if (dial_value > 23 && dial_value < 25 || dial_value == 2) {
     systemActivate = true;
     analogWrite(MOTOR_PIN_A_A, 100);
     analogWrite(MOTOR_PIN_A_B, 0);
     analogWrite(MOTOR_PIN_B_A, 100);
     analogWrite(MOTOR_PIN_B_B, 0);
-  } else if (dial_value > 25 || dial_value == 53) {
+  } else if (dial_value > 25 || dial_value == 3) {
     systemActivate = true;
     analogWrite(MOTOR_PIN_A_A, 250);
     analogWrite(MOTOR_PIN_A_B, 0);
@@ -191,15 +190,15 @@ void coolingPen() {
 }
 
 void servoMotor() {
-  if (dial_value > 20 && dial_value < 23 || dial_value == 51) {
+  if (dial_value > 20 && dial_value < 23 || dial_value == 1) {
     systemActivate = true;
     servo_pin_A.write(60);
     servo_pin_B.write(60);
-  } else if (dial_value > 23 && dial_value < 25 || dial_value == 52) {
+  } else if (dial_value > 23 && dial_value < 25 || dial_value == 2) {
     systemActivate = true;
     servo_pin_A.write(120);
     servo_pin_B.write(120);
-  } else if (dial_value > 25 || dial_value == 53) {
+  } else if (dial_value > 25 || dial_value == 3) {
     systemActivate = true;
     servo_pin_A.write(180);
     servo_pin_B.write(180);
@@ -211,17 +210,17 @@ void servoMotor() {
 }
 
 void RGB_color() {
-  if (dial_value > 1 && dial_value < 10 || dial_value == 61) {
+  if (dial_value > 1 && dial_value < 10 || dial_value == 4) {
     systemActivate = true;
     analogWrite(R, 0); // Set RGB to Green
     analogWrite(G, 255);
     analogWrite(B, 0);
-  } else if (dial_value > 10 && dial_value < 15 || dial_value == 62) {
+  } else if (dial_value > 10 && dial_value < 15 || dial_value == 5) {
     systemActivate = true;
     analogWrite(R, 0); // Set RGB to Cyan
     analogWrite(G, 255);
     analogWrite(B, 255);
-  } else if (dial_value > 15 && dial_value < 20 || dial_value == 63) {
+  } else if (dial_value > 15 && dial_value < 20 || dial_value == 6) {
     systemActivate = true;
     analogWrite(R, 255); // Set RGB to Red
     analogWrite(G, 0);
