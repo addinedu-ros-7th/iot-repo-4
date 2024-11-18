@@ -146,7 +146,7 @@ class UserTable():
         self.cursor.execute("SELECT PW FROM USER WHERE ID = %s", (id,))
         result = self.cursor.fetchall()
         if result:
-            stored_pw = result[0]
+            stored_pw = result[0][0]
             if bcrypt.checkpw(pw.encode('utf-8'), stored_pw.encode('utf-8')):
                 slack_token = os.getenv("SLACK_TOKEN")
                 client = WebClient(token=slack_token)
@@ -177,14 +177,6 @@ class UserTable():
         self.cursor.execute("SELECT * FROM USER")
         return self.cursor.fetchall()
 
-    def append_user(self, id, pw):
-        #유저 데이터를 추가합니다.
-        try:
-            self.cursor.execute("INSERT INTO USER (ID, PW) VALUES (%s, %s)", (id, pw))
-            self.conn.commit()
-            return True
-        except pymysql.IntegrityError:
-            return False
 
     def update_user(self, id, pw):
         # 비밀번호 변경 시 해싱

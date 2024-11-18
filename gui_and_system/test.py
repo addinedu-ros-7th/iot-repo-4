@@ -152,8 +152,10 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
         ###########
 
         #GUI Read
+        self.dial_2.valueChanged.connect(self.dial_value_status)
+        
+
         self.dial_value = self.dial_2.value()
-        serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
 
         # Arduino connection status 
         self.le_connection_status.setText("Connecting to Arduino...")
@@ -242,7 +244,8 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
 
     def update_plot(self):
         self.read_arduino_data()  # Call data-reading function
-
+        
+        print(self.x)
         # Update plot data
         self.temperature_data = np.roll(self.temperature_data, -1)
         self.temperature_data[-1] = self.temperature
@@ -460,6 +463,12 @@ class SunnyMainWindow(QMainWindow, form_class): # QWidget vs QMainWindow
                 border-radius: {self.dial_2.width() // 2}px;
             }}
         """)
+
+    def dial_value_status(self, value):
+        self.dial_value = value
+        print(f"Dial value: {self.dial_value}")
+        serial.Serial(main_usd_port, 9600, timeout=1).write(str(self.dial_value).encode())
+
 
 
 if __name__ == '__main__':
