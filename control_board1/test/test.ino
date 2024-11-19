@@ -40,6 +40,7 @@ bool pumpState = false;
 
 // VARIABLE SETUP
 int Temperature = 0;
+int auto_Temperature = 0;
 int Humidity = 0;
 int Water_level = 0;
 int Nutri_Water_level = 0;
@@ -49,6 +50,14 @@ bool isCoolingPenActive = false;
 bool isServoActive = false;
 bool systemActivate = false;
 int dial_value = 0;
+
+// 모터 단계별 조절
+int level1_fan_motor_OUTPUT = 100;
+int level2_fan_motor_OUTPUT = 150;
+int level3_fan_motor_OUTPUT = 200;
+int level1_servo_motor_OUTPUT = 45;
+int level2_servo_motor_OUTPUT = 75;
+int level3_servo_motor_OUTPUT = 100;
 
 void setup() {
   pinMode(MOTOR_PIN_A_A, OUTPUT);
@@ -91,15 +100,80 @@ void loop() {
   Serial.print(Moisture_mapped);
   Serial.println();
 
-  delay(1000);
-
-  if (Serial.available()) {
+  if (Serial.available() > 0){
     dial_value = Serial.parseInt();
-    isCoolingPenActive = true;
-    isServoActive = true;
-    coolingPen();
-    servoMotor();
-    RGB_color();
+    Serial.print(dial_value);
+      // 디아얼 값 7 (자동)
+    if (dial_value == 7){
+      // 1단계
+      auto_Temperature = Temperature;
+      if (auto_Temperature > 20 && auto_Temperature <= 23){
+        systemActivate = true;
+        Serial.print(1111);
+        level1();
+        auto_Temperature = Temperature;
+      }
+      // 2단계
+      
+      else if (auto_Temperature > 23 && auto_Temperature <= 25){
+        systemActivate = true;
+        Serial.print(Temperature);
+        Serial.print(2222);
+        level2();
+        auto_Temperature = Temperature;
+
+      }
+      // 3단계
+      else if (auto_Temperature > 25 && auto_Temperature < 30 ){
+        systemActivate = true;
+        Serial.print(2222);
+        level3();
+        auto_Temperature = Temperature;
+      }
+    }
+    // 다이얼 값이 1단계, 2단계, 3단계 일때
+    else if (dial_value == 1){
+      systemActivate = true;
+      level1();
+    }
+    else if (dial_value == 2){
+      systemActivate = true;
+      level2();
+    }
+    else if (dial_value == 3){
+      systemActivate = true;
+      level3();
+    }
+    // 다이얼 값이 4단계, 5단계, 6단계 일ㄸ
+    else if (dial_value == 4){
+      systemActivate = true;
+      analogWrite(R, 0); // Set RGB to Green
+      analogWrite(G, 255);
+      analogWrite(B, 0);
+      fan_servo_off();
+    }
+    else if (dial_value == 5){
+      systemActivate = true;
+      analogWrite(R, 0); // Set RGB to Cyan
+      analogWrite(G, 255);
+      analogWrite(B, 255);
+      fan_servo_off();
+    }
+    else if (dial_value == 6){
+      systemActivate = true;
+      analogWrite(R, 255); // Set RGB to Red
+      analogWrite(G, 0);
+      analogWrite(B, 0);
+      fan_servo_off();
+    }
+    else if (dial_value == 0){
+      systemActivate = false;
+      analogWrite(R, 0); // Set RGB to White
+      analogWrite(G, 0);
+      analogWrite(B, 0);
+      fan_servo_off();
+    }
+    delay(2000);
   }
 }
 
@@ -123,90 +197,132 @@ void waterPump() {
   }
 }
 
+void level1(){
+    analogWrite(MOTOR_PIN_A_A, level1_fan_motor_OUTPUT);
+    analogWrite(MOTOR_PIN_A_B, 0);
+    analogWrite(MOTOR_PIN_B_A, level1_fan_motor_OUTPUT);
+    analogWrite(MOTOR_PIN_B_B, 0);
+    servo_pin_A.write(level1_servo_motor_OUTPUT);
+    servo_pin_B.write(level1_servo_motor_OUTPUT);
+    analogWrite(R, 0); // Set RGB to White
+    analogWrite(G, 0);
+    analogWrite(B, 0);
+
+  }
+void level2(){
+  analogWrite(MOTOR_PIN_A_A, level2_fan_motor_OUTPUT);
+  analogWrite(MOTOR_PIN_A_B, 0);
+  analogWrite(MOTOR_PIN_B_A, level2_fan_motor_OUTPUT);
+  analogWrite(MOTOR_PIN_B_B, 0);
+  servo_pin_A.write(level2_servo_motor_OUTPUT);
+  servo_pin_B.write(level2_servo_motor_OUTPUT);
+  analogWrite(R, 0); // Set RGB to White
+  analogWrite(G, 0);
+  analogWrite(B, 0);
+}
+void level3(){
+  analogWrite(MOTOR_PIN_A_A, level3_fan_motor_OUTPUT);
+  analogWrite(MOTOR_PIN_A_B, 0);
+  analogWrite(MOTOR_PIN_B_A, level3_fan_motor_OUTPUT);
+  analogWrite(MOTOR_PIN_B_B, 0);
+  servo_pin_A.write(level3_servo_motor_OUTPUT);
+  servo_pin_B.write(level3_servo_motor_OUTPUT);
+  analogWrite(R, 0); // Set RGB to White
+  analogWrite(G, 0);
+  analogWrite(B, 0);
+}
+void fan_servo_off(){
+  analogWrite(MOTOR_PIN_A_A, 0);
+  analogWrite(MOTOR_PIN_A_B, 0);
+  analogWrite(MOTOR_PIN_B_A, 0);
+  analogWrite(MOTOR_PIN_B_B, 0);
+  servo_pin_A.write(0);
+  servo_pin_B.write(0); 
+}
 
 // Additional functions remain unchanged.
 
 
-// Function Setup
-void coolingPen() {
-  if (dial_value > 20 && dial_value < 23 || dial_value == 1) {
-    systemActivate = true;
-    analogWrite(MOTOR_PIN_A_A, 100);
-    analogWrite(MOTOR_PIN_A_B, 0);
-    analogWrite(MOTOR_PIN_B_A, 100);
-    analogWrite(MOTOR_PIN_B_B, 0);
-  } else if (dial_value > 23 && dial_value < 25 || dial_value == 2) {
-    systemActivate = true;
-    analogWrite(MOTOR_PIN_A_A, 150);
-    analogWrite(MOTOR_PIN_A_B, 0);
-    analogWrite(MOTOR_PIN_B_A, 150);
-    analogWrite(MOTOR_PIN_B_B, 0);
-  } else if (dial_value > 25 || dial_value == 3) {
-    systemActivate = true;
-    analogWrite(MOTOR_PIN_A_A, 250);
-    analogWrite(MOTOR_PIN_A_B, 0);
-    analogWrite(MOTOR_PIN_B_A, 250);
-    analogWrite(MOTOR_PIN_B_B, 0);
-  } else if (dial_value == 0) {
-    systemActivate = false;
-    analogWrite(MOTOR_PIN_A_A, 0);
-    analogWrite(MOTOR_PIN_A_B, 0);
-    analogWrite(MOTOR_PIN_B_A, 0);
-    analogWrite(MOTOR_PIN_B_B, 0);
-  }
-}
-void servoMotor() {
-  if (dial_value > 20 && dial_value < 23 || dial_value == 1) {
-    systemActivate = true;
-    servo_pin_A.write(45);
-    servo_pin_B.write(45);
-  } else if (dial_value > 23 && dial_value < 25 || dial_value == 2) {
-    systemActivate = true;
-    servo_pin_A.write(70);
-    servo_pin_B.write(70);
-  } else if (dial_value > 25 || dial_value == 3) {
-    systemActivate = true;
-    servo_pin_A.write(100);
-    servo_pin_B.write(100);
-  } else if (dial_value == 0) {
-    systemActivate = false;
-    servo_pin_A.write(0);
-    servo_pin_B.write(0);
-  }
-    else if (dial_value == 4 || dial_value == 5 || dial_value == 6){
-      servo_pin_A.write(0);
-      servo_pin_B.write(0);
-    }
-  }
+// // Function Setup
+// void coolingPen() {
+//   if (dial_value > 20 && dial_value < 23 || dial_value == 1) {
+//     systemActivate = true;
+//     analogWrite(MOTOR_PIN_A_A, 100);
+//     analogWrite(MOTOR_PIN_A_B, 0);
+//     analogWrite(MOTOR_PIN_B_A, 100);
+//     analogWrite(MOTOR_PIN_B_B, 0);
+//   } else if (dial_value > 23 && dial_value < 25 || dial_value == 2) {
+//     systemActivate = true;
+//     analogWrite(MOTOR_PIN_A_A, 150);
+//     analogWrite(MOTOR_PIN_A_B, 0);
+//     analogWrite(MOTOR_PIN_B_A, 150);
+//     analogWrite(MOTOR_PIN_B_B, 0);
+//   } else if (dial_value > 25 || dial_value == 3) {
+//     systemActivate = true;
+//     analogWrite(MOTOR_PIN_A_A, 250);
+//     analogWrite(MOTOR_PIN_A_B, 0);
+//     analogWrite(MOTOR_PIN_B_A, 250);
+//     analogWrite(MOTOR_PIN_B_B, 0);
+//   } else if (dial_value == 0) {
+//     systemActivate = false;
+//     analogWrite(MOTOR_PIN_A_A, 0);
+//     analogWrite(MOTOR_PIN_A_B, 0);
+//     analogWrite(MOTOR_PIN_B_A, 0);
+//     analogWrite(MOTOR_PIN_B_B, 0);
+//   }
+// }
+// void servoMotor() {
+//   if (dial_value > 20 && dial_value < 23 || dial_value == 1) {
+//     systemActivate = true;
+//     servo_pin_A.write(45);
+//     servo_pin_B.write(45);
+//   } else if (dial_value > 23 && dial_value < 25 || dial_value == 2) {
+//     systemActivate = true;
+//     servo_pin_A.write(70);
+//     servo_pin_B.write(70);
+//   } else if (dial_value > 25 || dial_value == 3) {
+//     systemActivate = true;
+//     servo_pin_A.write(100);
+//     servo_pin_B.write(100);
+//   } else if (dial_value == 0) {
+//     systemActivate = false;
+//     servo_pin_A.write(0);
+//     servo_pin_B.write(0);
+//   }
+//     else if (dial_value == 4 || dial_value == 5 || dial_value == 6){
+//       servo_pin_A.write(0);
+//       servo_pin_B.write(0);
+//     }
+//   }
 
-void RGB_color() {
+// void RGB_color() {
 
 
-  if (Temperature > 1 && Temperature < 10 || dial_value == 4) {
-    systemActivate = true;
-    analogWrite(R, 0); // Set RGB to Green
-    analogWrite(G, 255);
-    analogWrite(B, 0);
-    servo_pin_A.write(0);
-    servo_pin_B.write(0);
-  } else if (Temperature > 10 && Temperature < 15 || dial_value == 5) {
-    systemActivate = true;
-    analogWrite(R, 0); // Set RGB to Cyan
-    analogWrite(G, 255);
-    analogWrite(B, 255);
-    servo_pin_A.write(0);
-    servo_pin_B.write(0);
-  } else if (Temperature > 15 && Temperature < 20 || dial_value == 6) {
-    systemActivate = true;
-    analogWrite(R, 255); // Set RGB to Red
-    analogWrite(G, 0);
-    analogWrite(B, 0);
-    servo_pin_A.write(0);
-    servo_pin_B.write(0);
-  } else if (dial_value == 0) {
-    systemActivate = false;
-    analogWrite(R, 0); // Set RGB to White
-    analogWrite(G, 0);
-    analogWrite(B, 0);
-  }
-}
+//   if (Temperature > 1 && Temperature < 10 || dial_value == 4) {
+//     systemActivate = true;
+//     analogWrite(R, 0); // Set RGB to Green
+//     analogWrite(G, 255);
+//     analogWrite(B, 0);
+//     servo_pin_A.write(0);
+//     servo_pin_B.write(0);
+//   } else if (Temperature > 10 && Temperature < 15 || dial_value == 5) {
+//     systemActivate = true;
+//     analogWrite(R, 0); // Set RGB to Cyan
+//     analogWrite(G, 255);
+//     analogWrite(B, 255);
+//     servo_pin_A.write(0);
+//     servo_pin_B.write(0);
+//   } else if (Temperature > 15 && Temperature < 20 || dial_value == 6) {
+//     systemActivate = true;
+//     analogWrite(R, 255); // Set RGB to Red
+//     analogWrite(G, 0);
+//     analogWrite(B, 0);
+//     servo_pin_A.write(0);
+//     servo_pin_B.write(0);
+//   } else if (dial_value == 0) {
+//     systemActivate = false;
+//     analogWrite(R, 0); // Set RGB to White
+//     analogWrite(G, 0);
+//     analogWrite(B, 0);
+//   }
+// }
