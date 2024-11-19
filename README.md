@@ -103,8 +103,6 @@
 
 ***
 
-<br>python3 onedayproj.py
-[ WARN:0@12.189] global cap_v4l.cpp:1136 tryIoctl VIDEOIO(V4L2:/dev/video0): select() timeout.
 
 
 ## 📊 상태 다이어그램
