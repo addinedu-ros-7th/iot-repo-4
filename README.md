@@ -3,7 +3,7 @@
 
 ***
 
-## 🌱 개요
+## 🌱 개요 (TEST)
 
 이 프로젝트는 아두이노로 스마트 농업 시스템을 재현하기 위해 개발된 작물 재배 자동화 및 모니터링 솔루션입니다.<br> 센서와 다양한 출력 장치들이 상호작용하여 실시간 데이터를 수집하고, <br > 
 환경에 맞춘 자동화 작업을 수행하여,<br>
@@ -103,8 +103,6 @@
 
 ***
 
-<br>python3 onedayproj.py
-[ WARN:0@12.189] global cap_v4l.cpp:1136 tryIoctl VIDEOIO(V4L2:/dev/video0): select() timeout.
 
 
 ## 📊 상태 다이어그램
