@@ -341,21 +341,21 @@ class SunnyMainWindow(QMainWindow, form_class):
         self.normal_count = 0
         self.abnormal_count = 0
 
-	self.temperature_str = "0"
+        self.temperature_str = "0"
         self.humidity_str = "0"
         self.waterlevel_str = "0"
         self.nutritionwaterlevel_str = "0"
         self.soilmoisture_str = "0"
 	#Graph setup
-	self.x = np.arange(10)  # x range 20으로 고정
-	self.temperature_data = np.zeros(10)  # array로 저장
+        self.x = np.arange(10)  # x range 20으로 고정
+        self.temperature_data = np.zeros(10)  # array로 저장
         self.humidity_data = np.zeros(10)
         self.soilmoisture_data = np.zeros(10)
 	    
         self.humidity_canvas = pg.GraphicsLayoutWidget()
         self.wdg_humidity.setLayout(QVBoxLayout())
         self.wdg_humidity.layout().addWidget(self.humidity_canvas)
-	self.HumidityPlot = self.humidity_canvas.addPlot()
+        self.HumidityPlot = self.humidity_canvas.addPlot()
         self.HumidityPlot.setXRange(0, 10)
         self.HumidityPlot.setYRange(0, 100)
         self.HumidityPlotLine = self.HumidityPlot.plot(pen='b')  # 그래프 라인만 따로 업데이트
@@ -363,7 +363,7 @@ class SunnyMainWindow(QMainWindow, form_class):
         self.temperature_canvas = pg.GraphicsLayoutWidget()
         self.wdg_temperature.setLayout(QVBoxLayout())
         self.wdg_temperature.layout().addWidget(self.temperature_canvas)
-	self.temperaturePlot = self.temperature_canvas.addPlot()
+        self.temperaturePlot = self.temperature_canvas.addPlot()
         self.temperaturePlot.setXRange(0, 10)
         self.temperaturePlot.setYRange(0, 30)
         self.temperaturePlotLine = self.temperaturePlot.plot(pen='g')  # 그래프 라인만 따로 업데이트
@@ -371,7 +371,7 @@ class SunnyMainWindow(QMainWindow, form_class):
         self.soilmoisture_canvas = pg.GraphicsLayoutWidget()
         self.wdg_soilmoisture.setLayout(QVBoxLayout())
         self.wdg_soilmoisture.layout().addWidget(self.soilmoisture_canvas)
-	self.soilmoisturePlot = self.soilmoisture_canvas.addPlot()
+        self.soilmoisturePlot = self.soilmoisture_canvas.addPlot()
         self.soilmoisturePlot.setXRange(0, 10)
         self.soilmoisturePlot.setYRange(0, 100)
         self.soilmoisturePlotLine = self.soilmoisturePlot.plot(pen='y')  # 그래프 라인만 따로 업데이트
