@@ -70,6 +70,7 @@ sub_usd_port =  "/dev/ttyACM1" # "/dev/ttyACM1"
 print(f"Main USB Port: {main_usd_port}")
 print(f"Sub USB Port: {sub_usd_port}")
 
+# DeepLearing Thread
 class DetectionThread(QThread):
     image_update = pyqtSignal(QImage)
     detection_data_update = pyqtSignal(list)
@@ -209,21 +210,20 @@ class DetectionThread(QThread):
 
 
 
-# Main Window
-class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
+# Main Operating Window
+class SunnyMainWindow(QMainWindow, form_class):
     def __init__(self):
         super(SunnyMainWindow, self).__init__()
         self.setupUi(self)
-
+	
+	#CONNECTION SETUP
         # 시리얼 포트를 타임아웃과 함께 초기화
         self.arduinoMainData = serial.Serial(main_usd_port, 9600, timeout=0.1)
         self.arduinoSubData = serial.Serial(sub_usd_port, 9600, timeout=0.1)
-
         # 시리얼 읽기 스레드 시작
         self.serial_thread = threading.Thread(target=self.read_serial_data)
         self.serial_thread.daemon = True
         self.serial_thread.start()
-
         # 검출된 객체 정보 저장 변수
         self.detection_data = []
         # 객체 검출 스레드 생성 및 시그널 연결
@@ -231,30 +231,23 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.detection_thread.image_update.connect(self.update_image)
         self.detection_thread.detection_data_update.connect(self.update_detection_data)
         self.detection_thread.start()
-
-
+	
         self.last_data_append_time = time.time()
-
-        # 업데이트 주기
+        # Updating interval time
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_plot)
-        self.timer.start(100)  # 100 밀리초마다 업데이트
-
-
-        # SET ATTRIBUTE PROPERTY -------------------------------------------------------------------------
-        
+        self.timer.start(100)
+	    
+	# PYQT SETUP
         self.systemstate = 1
-
         # 초기 아이콘 상태 설정
-        self.is_toggle_on = False
-
+        self.is_toggle_on = False 
         # 각 버튼의 초기 상태 설정
         self.is_fan_on = False
         self.is_fan2_on = False
         self.is_window1_on = False
         self.is_window2_on = False
         self.is_light_on = False
-
         # 각 버튼의 아이콘 초기 설정
         self.on_off_fan.setIcon(QIcon(":/off.png"))
         self.on_off_fan2.setIcon(QIcon(":/off.png"))
