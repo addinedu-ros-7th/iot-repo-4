@@ -554,49 +554,48 @@ QPushButton {
 
 </string>
            </property>
-           <widget class="QGroupBox" name="group2">
+           <widget class="QGroupBox" name="group_graph24">
             <property name="geometry">
              <rect>
-              <x>210</x>
-              <y>429</y>
+              <x>200</x>
+              <y>200</y>
               <width>771</width>
-              <height>471</height>
+              <height>701</height>
              </rect>
             </property>
             <property name="title">
-             <string/>
+             <string>통계 그래프</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_4">
-             <item row="2" column="0" colspan="3">
-              <widget class="QWidget" name="wdg_temperature" native="true"/>
-             </item>
-             <item row="0" column="1" colspan="2">
-              <spacer name="horizontalSpacer_9">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>93</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
+             <item row="1" column="0" colspan="2">
+              <widget class="QWidget" name="wdg_graph24" native="true"/>
              </item>
              <item row="0" column="0">
-              <widget class="QLineEdit" name="le_waterlevel_2">
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
+              <widget class="QComboBox" name="comboBox">
                <property name="styleSheet">
                 <string notr="true">color: rgb(0, 0, 0);</string>
                </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QGroupBox" name="group_temperature">
+            <property name="geometry">
+             <rect>
+              <x>200</x>
+              <y>0</y>
+              <width>231</width>
+              <height>181</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>온도</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="le_temperature">
                <property name="text">
-                <string>실시간</string>
+                <string>le_temperature</string>
                </property>
                <property name="readOnly">
                 <bool>true</bool>
@@ -604,307 +603,9 @@ QPushButton {
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLineEdit" name="le_humidity">
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>습도</string>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
+              <widget class="QWidget" name="wdg_temperature" native="true"/>
              </item>
             </layout>
-           </widget>
-           <widget class="QGroupBox" name="group1">
-            <property name="geometry">
-             <rect>
-              <x>210</x>
-              <y>-10</y>
-              <width>771</width>
-              <height>451</height>
-             </rect>
-            </property>
-            <property name="title">
-             <string/>
-            </property>
-            <widget class="QWidget" name="wdg_humidity" native="true">
-             <property name="geometry">
-              <rect>
-               <x>14</x>
-               <y>66</y>
-               <width>743</width>
-               <height>371</height>
-              </rect>
-             </property>
-             <widget class="QLineEdit" name="le_temperature">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>0</y>
-                <width>367</width>
-                <height>18</height>
-               </rect>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </widget>
-            <widget class="QLineEdit" name="le_humidity_2">
-             <property name="geometry">
-              <rect>
-               <x>15</x>
-               <y>31</y>
-               <width>123</width>
-               <height>18</height>
-              </rect>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(0, 0, 0);</string>
-             </property>
-             <property name="text">
-              <string>실시간</string>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QLineEdit" name="le_temperature_3">
-             <property name="geometry">
-              <rect>
-               <x>180</x>
-               <y>30</y>
-               <width>123</width>
-               <height>18</height>
-              </rect>
-             </property>
-             <property name="palette">
-              <palette>
-               <active>
-                <colorrole role="WindowText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Button">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Text">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="ButtonText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Base">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Window">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="PlaceholderText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-               </active>
-               <inactive>
-                <colorrole role="WindowText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Button">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Text">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="ButtonText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Base">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Window">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="PlaceholderText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-               </inactive>
-               <disabled>
-                <colorrole role="WindowText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Button">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Text">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="ButtonText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Base">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="Window">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>251</red>
-                   <green>251</green>
-                   <blue>251</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-                <colorrole role="PlaceholderText">
-                 <brush brushstyle="SolidPattern">
-                  <color alpha="255">
-                   <red>0</red>
-                   <green>0</green>
-                   <blue>0</blue>
-                  </color>
-                 </brush>
-                </colorrole>
-               </disabled>
-              </palette>
-             </property>
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>온도</string>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
            </widget>
            <widget class="QGroupBox" name="gb_2">
             <property name="geometry">
@@ -912,14 +613,44 @@ QPushButton {
               <x>990</x>
               <y>-10</y>
               <width>831</width>
-              <height>451</height>
+              <height>441</height>
              </rect>
             </property>
             <property name="title">
              <string/>
             </property>
             <layout class="QGridLayout" name="gridLayout_6">
-             <item row="2" column="0" colspan="2">
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="le_normal_count">
+               <property name="font">
+                <font>
+                 <pointsize>13</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>le_normal_count</string>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="le_abnormal_count">
+               <property name="font">
+                <font>
+                 <pointsize>13</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>le_abnormal_count</string>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
               <widget class="QWidget" name="wdg_temperature_1" native="true">
                <widget class="QLabel" name="image_label">
                 <property name="geometry">
@@ -935,31 +666,6 @@ QPushButton {
                 </property>
                </widget>
               </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLineEdit" name="le_temperature_2">
-               <property name="font">
-                <font>
-                 <pointsize>13</pointsize>
-                </font>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <spacer name="horizontalSpacer_11">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>93</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
            </widget>
@@ -1842,24 +1548,67 @@ QPushButton:focus {
              </rect>
             </property>
            </widget>
-           <widget class="QLineEdit" name="le_soilmoisture">
+           <widget class="QGroupBox" name="group_humidity">
             <property name="geometry">
              <rect>
-              <x>1030</x>
-              <y>930</y>
-              <width>161</width>
-              <height>51</height>
+              <x>460</x>
+              <y>0</y>
+              <width>231</width>
+              <height>181</height>
              </rect>
             </property>
-            <property name="text">
+            <property name="title">
+             <string>습도</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="le_humidity">
+               <property name="text">
+                <string>le_humidity</string>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QWidget" name="wdg_humidity" native="true"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QGroupBox" name="group_soilmoisture">
+            <property name="geometry">
+             <rect>
+              <x>720</x>
+              <y>0</y>
+              <width>251</width>
+              <height>181</height>
+             </rect>
+            </property>
+            <property name="title">
              <string>토양 습도</string>
             </property>
+            <layout class="QGridLayout" name="gridLayout_11">
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="le_soilmoisture">
+               <property name="text">
+                <string>le_soilhumidity</string>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QWidget" name="wdg_soilmoisture" native="true"/>
+             </item>
+            </layout>
            </widget>
           </widget>
           <widget class="QWidget" name="page_2_login">
            <property name="styleSheet">
             <string notr="true">#page_2_login {
-        border-image: url(/home/jieun/ws/FarmAI/icons/loginbackground.jpg) 0 0 0 0 stretch stretch;
+        border-image: url(/home/truman/Github/temp/iot-repo-4/gui_and_system/icons/loginbackground.jpg) 0 0 0 0 stretch stretch;
     }
 </string>
            </property>
@@ -1900,8 +1649,8 @@ QLineEdit{
             <widget class="QLabel" name="label_6">
              <property name="geometry">
               <rect>
-               <x>-70</x>
-               <y>0</y>
+               <x>-110</x>
+               <y>20</y>
                <width>991</width>
                <height>236</height>
               </rect>

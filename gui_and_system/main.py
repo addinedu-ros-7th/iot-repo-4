@@ -63,8 +63,8 @@ ui_file_path = os.path.join(current_dir, 'interface03.ui')
 
 form_class = uic.loadUiType(ui_file_path)[0]
 
-main_usd_port = "/dev/ttyACM1"  # "/dev/ttyACM0"
-sub_usd_port =  "/dev/ttyACM0" # "/dev/ttyACM1"
+main_usd_port = "/dev/ttyACM0"  # "/dev/ttyACM0"
+sub_usd_port =  "/dev/ttyACM1" # "/dev/ttyACM1"
 
 # main_usd_port와 sub_usd_port를 사용하여 Arduino에 연결
 print(f"Main USB Port: {main_usd_port}")
@@ -242,6 +242,8 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
 
 
         # SET ATTRIBUTE PROPERTY -------------------------------------------------------------------------
+        
+        self.systemstate = 1
 
         # 초기 아이콘 상태 설정
         self.is_toggle_on = False
@@ -358,28 +360,52 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.wdg_temperature.setLayout(QVBoxLayout())
         self.wdg_temperature.layout().addWidget(self.temperature_canvas)
 
+        self.soilmoisture_canvas = pg.GraphicsLayoutWidget()
+        self.wdg_soilmoisture.setLayout(QVBoxLayout())
+        self.wdg_soilmoisture.layout().addWidget(self.soilmoisture_canvas)
+        
+#-------------------------
+        self.graph24_canvas = pg.GraphicsLayoutWidget()
+        self.wdg_graph24.setLayout(QVBoxLayout())
+        self.wdg_graph24.layout().addWidget(self.graph24_canvas)
+        self.plot_graph24()
+
+        self.date_list = self.get_date_list()
+        self.comboBox.addItems(self.date_list)
+
+        self.comboBox.currentIndexChanged.connect(self.combo_value)
+
+#-------------------------
         self.HumidityPlot = self.humidity_canvas.addPlot()
-        self.HumidityPlot.setXRange(0, 20)
+        self.HumidityPlot.setXRange(0, 10)
         self.HumidityPlot.setYRange(0, 100)
         self.HumidityPlotLine = self.HumidityPlot.plot(pen='b')  # 그래프 라인만 따로 업데이트
 
         self.temperaturePlot = self.temperature_canvas.addPlot()
-        self.temperaturePlot.setXRange(0, 20)
+        self.temperaturePlot.setXRange(0, 10)
         self.temperaturePlot.setYRange(0, 30)
         self.temperaturePlotLine = self.temperaturePlot.plot(pen='g')  # 그래프 라인만 따로 업데이트
 
-        self.x = np.arange(20)  # x range 20으로 고정
-        self.temperature_data = np.zeros(20)  # array로 저장
-        self.humidity_data = np.zeros(20)
+        self.soilmoisturePlot = self.soilmoisture_canvas.addPlot()
+        self.soilmoisturePlot.setXRange(0, 10)
+        self.soilmoisturePlot.setYRange(0, 100)
+        self.soilmoisturePlotLine = self.soilmoisturePlot.plot(pen='y')  # 그래프 라인만 따로 업데이트
+
+
+        self.x = np.arange(10)  # x range 20으로 고정
+        self.temperature_data = np.zeros(10)  # array로 저장
+        self.humidity_data = np.zeros(10)
+        self.soilmoisture_data = np.zeros(10)
 
         self.temperature_str = "0"
         self.humidity_str = "0"
         self.waterlevel_str = "0"
         self.nutritionwaterlevel_str = "0"
+        self.soilmoisture_str = "0"
 
         self.temperature = 0
         self.humidity = 0
-        self.soilhumidity = 0
+        self.soilmoisture = 0
         self.waterlevel = 0
         self.nutritionwaterlevel = 0
         self.mapped_waterlevel = 0
@@ -388,15 +414,23 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.normal_count = 0
         self.abnormal_count = 0
 
-        
-
+        # 물 넣어주는 함수
+        self.pushButton_17.clicked.connect(self.water_push)
+        self.pushButton_18.clicked.connect(self.nutri_push)
         # GUI Read
         # 그냥 print 하는 함수 사용
         self.dial_2.valueChanged.connect(self.dial_value_status)
 
         self.dial_value = self.dial_2.value()
 
-
+    def water_push (self):
+        data_str_for_main = str("9")
+        self.arduinoMainData.write(data_str_for_main.encode())
+        
+    def nutri_push (self):
+        data_str_for_main = str("10")
+        self.arduinoMainData.write(data_str_for_main.encode())
+        
     # DeepLearning
     def closeEvent(self, event):
         # 스레드 정지 및 자원 해제
@@ -429,7 +463,14 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
     def system_off(self):
         data_str_for_main = str("1000") + "\n"
         self.arduinoMainData.write(data_str_for_main.encode())
-        data_str_for_sub = str("0") + "\n"
+        data_str_for_sub = str("0")
+        self.arduinoSubData.write(data_str_for_sub.encode())
+    
+    def system_on(self):
+        print("system on")
+        data_str_for_main = str("2000")
+        self.arduinoMainData.write(data_str_for_main.encode())
+        data_str_for_sub = str("2")
         self.arduinoSubData.write(data_str_for_sub.encode())
 
     # 별도 스레드에서 시리얼 데이터 읽기
@@ -455,7 +496,6 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                     try:
                         if "Security:" in data2:
                             state = data2[-1:]
-                            print("data2 split", state)
                             if state == "2":
                                 self.security_state = True
                                 state1_start_time = None
@@ -495,16 +535,17 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                     last_received_time_main = current_time  # 데이터 수신 시간 갱신
 
                     try:
-                        if "Temperature:" in data and "Humidity:" in data and 'Water Level:' in data and 'Nutrition Water Level:' in data:
+                        if "Temperature:" in data and "Humidity:" in data and 'Water Level:' in data and 'Nutrition Water Level:' in data and 'Soil Moisture:' in data:
                             self.temperature_str = data.split("Temperature:")[1].split(",")[0].strip()
                             self.humidity_str = data.split("Humidity:")[1].split(",")[0].strip()
                             self.waterlevel_str = data.split("Water Level:")[1].split(",")[0].strip()
                             self.nutritionwaterlevel_str = data.split("Nutrition Water Level:")[1].split(",")[0].strip()
+                            self.soilmoisture_str = data.split("Soil Moisture:")[1].split(",")[0].strip()
 
                             # 값 변환
                             self.temperature = int(self.temperature_str)
                             self.humidity = int(self.humidity_str)
-                            self.soilhumidity = int(self.humidity_str)
+                            self.soilmoisture = int(self.soilmoisture_str)
                             self.waterlevel = int(self.waterlevel_str)
                             self.mapped_waterlevel = int(((self.waterlevel - 0) * (100 - 50) / (650 - 0)) + 50)
                             self.nutritionwaterlevel = int(self.nutritionwaterlevel_str)
@@ -535,26 +576,32 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.temperature_data[-1] = self.temperature
         self.humidity_data = np.roll(self.humidity_data, -1)
         self.humidity_data[-1] = self.humidity
+        self.soilmoisture_data = np.roll(self.soilmoisture_data, -1)
+        self.soilmoisture_data[-1] = self.soilmoisture
 
         # Update GUI elements
         self.le_temperature.setText(f"{self.temperature_str} °C")
         self.le_humidity.setText(f"{self.humidity_str} %")
         self.le_waterlevel.setText(f"{self.mapped_waterlevel} %")
         self.le_nutwaterlevel.setText(f"{self.mapped_nutritionwaterlevel} %")
-
+        self.le_normal_count.setText(f"Normal Seed: {self.normal_count}")
+        self.le_abnormal_count.setText(f"Abnormal Seed: {self.abnormal_count} ")
+        self.le_soilmoisture.setText(f"{self.soilmoisture} %")
         self.pbar_waterlevel.setValue(self.mapped_waterlevel)
         self.pbar_nutwaterlevel.setValue(self.mapped_nutritionwaterlevel)
 
-        # Update graph lines
+        # Update graph linescd
         self.temperaturePlotLine.setData(self.x, self.temperature_data)
         self.HumidityPlotLine.setData(self.x, self.humidity_data)
+        self.soilmoisturePlotLine.setData(self.x, self.soilmoisture_data)
+
 
         farm_table = SmartFarmTable()
         current_time = time.time()
         if current_time - self.last_data_append_time >= 1.0:  # 1초마다 데이터 추가
             farm_table = SmartFarmTable()
             farm_table.append(self.mapped_waterlevel, self.mapped_nutritionwaterlevel,
-                              self.soilhumidity, self.humidity, self.temperature,
+                              self.soilmoisture, self.humidity, self.temperature,
                               self.security_state, self.normal_count, self.abnormal_count)
             self.last_data_append_time = current_time
 
@@ -612,7 +659,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
 
         self.menuExpanded = not self.menuExpanded
 
-
+##################바뀐 부분###############3
     def changePage(self, index, active_button, buttons=None):
         if buttons is None:
             buttons = [self.DashboardBtn, self.SettingsBtn, self.LogoutBtn, self.LoginBtn]
@@ -627,50 +674,96 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                 padding: 5px 10px;
                 border-radius: 5px;
             }
-        """
 
-        default_style_login = """
-            QPushButton {
-                background-color: rgb(243, 243, 243);
-                color: black;
-                border: none;
-                text-align: left;
-                padding: 5px 10px;
-                border-radius: 5px;
+            
+            QPushButton:disabled {
+                color: gray;
+            }
+
+            QPushButton#LoginBtn {
+                background-color: transparent;  /* 버튼 배경색: 투명 */
+            }
+
+            QPushButton:focus {
+                outline: none;  /* 포커스 시 테두리 제거 */
             }
         """
 
         active_style = """
             QPushButton {
-                background-color: #E6E47C;
+                background-color: #A9D6B2;
                 color: black;
                 border: none;
                 text-align: left;
                 padding: 5px 10px;
                 border-radius: 5px;
             }
+            
+
+            QPushButton:focus {
+                outline: none;  /* 포커스 시 테두리 제거 */
+            }
         """
+        # 버튼 스타일 업데이트
+        for button in buttons:
+            if button == active_button:
+                button.setStyleSheet(active_style)
+            else:
+                button.setStyleSheet(default_style)
 
-        self.DashboardBtn.setStyleSheet(default_style)
-        self.LoginBtn.setStyleSheet(default_style_login)
-        self.SettingsBtn.setStyleSheet(default_style)
-
-        active_button.setStyleSheet(active_style)
-
+        # 현재 활성화된 버튼 업데이트
         self.currentActiveButton = active_button
+###########################################################
+
+        # self.DashboardBtn.setStyleSheet(default_style)
+        # self.LoginBtn.setStyleSheet(default_style_login)
+        # self.SettingsBtn.setStyleSheet(default_style)
+
+        # active_button.setStyleSheet(active_style)
+
+        # self.currentActiveButton = active_button
 
     def login(self):
         user_id = self.lineEdit_id.text()
         user_pw = self.lineEdit_password.text()
 
         msg = QMessageBox(self)
-        msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
+        msg.setStyleSheet("""QLabel { color : black; } QPushButton {color : black;}""")  # 텍스트 색상 설정 #수정함 
 
         if self.user_table.login(user_id, user_pw):
             msg.setWindowTitle("로그인 성공")
             msg.setText(f"{user_id}님 환영합니다!")
             msg.exec_()
-            self.stackedWidget.setCurrentIndex(0)  # 대시보드 페이지로 이동
+            # self.stackedWidget.setCurrentIndex(0)  # 대시보드 페이지로 이동
+#####################################수정부분###################
+            # 버튼 활성화
+            self.DashboardBtn.setEnabled(True)
+            self.SettingsBtn.setEnabled(True)
+            self.LogoutBtn.setEnabled(True)
+
+            # LoginBtn 비활성화  #수정
+            self.LoginBtn.setEnabled(False)  #수정
+
+            # 대시보드 페이지로 이동 및 스타일 업데이트
+            self.changePage(0, self.DashboardBtn, [self.DashboardBtn, self.SettingsBtn, self.LogoutBtn, self.LoginBtn])
+
+            # LoginBtn을 투명하게 설정
+            style_transparent = """
+                QPushButton {
+                    background-color: transparent;
+                    color: black;
+                    border: none;
+                    text-align: left;
+                    padding: 5px 10px;
+                }
+            """
+            self.LoginBtn.setStyleSheet(style_transparent)
+            self.SettingsBtn.setStyleSheet(style_transparent)
+            self.LogoutBtn.setStyleSheet(style_transparent)
+
+	    # 로그인 되면 조명 자동으로 켜져 있음
+            self.on_off_light.setIcon(QIcon(":/on.png"))
+###########################################################
         else:
             msg.setWindowTitle("로그인 실패")
             msg.setText("아이디 또는 비밀번호가 잘못되었습니다.")
@@ -688,17 +781,22 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         user_pw = self.pw_input.text()
 
         msg = QMessageBox(self)
-        msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
+        msg.setStyleSheet("QLabel { color : black;} QPushButton { color: black;}")  # 텍스트 색상을 검은색으로 설정        
+        #msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
 
         if self.user_table.append_user(user_id, user_pw):
             msg.setWindowTitle("추가 성공")
             msg.setText(f"{user_id}가 추가되었습니다.")
             msg.exec_()
             self.load_data()  # 새로고침
+            self.id_input.clear()
+            self.pw_input.clear()            
         else:
             msg.setWindowTitle("추가 실패")
             msg.setText("중복된 ID가 있습니다.")
             msg.exec_()
+            self.id_input.clear()
+            self.pw_input.clear()             
 
     def update_user(self):
         user_id = self.id_input.text()
@@ -707,12 +805,14 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.user_table.update_user(user_id, user_pw)
 
         msg = QMessageBox(self)
-        msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
+        msg.setStyleSheet("QLabel { color : black; } QPushButton { color: black; }")  # 텍스트 색상을 검은색으로 설정
         msg.setWindowTitle("수정 성공")
         msg.setText(f"{user_id}의 비밀번호가 수정되었습니다.")
         msg.exec_()
 
         self.load_data()  # 새로고침
+        self.id_input.clear()
+        self.pw_input.clear()         
 
     def delete_user(self):
         user_id = self.id_input.text()
@@ -720,18 +820,22 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.user_table.delete_user(user_id)
 
         msg = QMessageBox(self)
-        msg.setStyleSheet("QLabel { color : black; }")  # 텍스트 색상을 검은색으로 설정
+        msg.setStyleSheet("QLabel { color : black; } QPushButton { color: black; }")  # 텍스트 색상을 검은색으로 설정
         msg.setWindowTitle("삭제 성공")
         msg.setText(f"{user_id}가 삭제되었습니다.")
         msg.exec_()
 
         self.load_data()  # 새로고침
+        self.id_input.clear()
+        self.pw_input.clear()         
+
 
     def load_selected_user(self, row, column):
         selected_id = self.tableWidget.item(row, 0).text()
         selected_pw = self.tableWidget.item(row, 1).text()
         self.id_input.setText(selected_id)
         self.pw_input.setText(selected_pw)
+
 
 
     def on_dial_change(self, value):
@@ -798,6 +902,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
     def confirm_shutdown(self):
         # 현재 버튼 상태 확인
         if self.shutdown_btn.text() == "작동시작":
+            self.system_on()
             # 이미 '작동시작' 상태인 경우
             self.shutdown_btn.setText("시스템 종료")
             self.shutdown_btn.setStyleSheet(""" 
@@ -818,6 +923,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
                     outline: none;  /* 포커스 시 테두리 제거 */
                 }
             """)
+            
             return  # QMessageBox를 건너뜀
         # QMessageBox 객체 생성
         msg = QMessageBox(self)
@@ -826,6 +932,7 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         msg.setIcon(QMessageBox.Warning)
         # '예' 버튼 생성 및 추가
         yes_button = QPushButton("예")
+        yes_button.clicked.connect(self.system_off)
         msg.addButton(yes_button, QMessageBox.YesRole)
         # '아니요' 버튼 생성 및 추가
         no_button = QPushButton("아니요")
@@ -920,16 +1027,28 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         self.SettingsBtn.setEnabled(False)
         self.LogoutBtn.setEnabled(False)
         self.LoginBtn.setEnabled(True)
-        # 비활성화된 상태의 스타일 설정
+####################수정        # 비활성화된 상태의 스타일 설정  
         style_disabled = """
             QPushButton:disabled {
                 color: gray;
                 background-color: transparent;  /* 비활성화 시 회색 배경 */
             }
+            
             QPushButton:focus {
                 outline: none;  /* 포커스 시 테두리 제거 */
-            }
+            }            
         """
+#######################################################
+        # 비활성화된 상태의 스타일 설정
+        # style_disabled = """
+        #     QPushButton:disabled {
+        #         color: gray;
+        #         background-color: transparent;  /* 비활성화 시 회색 배경 */
+        #     }
+        #     QPushButton:focus {
+        #         outline: none;  /* 포커스 시 테두리 제거 */
+        #     }
+        # """
         self.DashboardBtn.setStyleSheet(style_disabled)
         self.SettingsBtn.setStyleSheet(style_disabled)
         self.LogoutBtn.setStyleSheet(style_disabled)
@@ -944,7 +1063,115 @@ class SunnyMainWindow(QMainWindow, form_class):  # QWidget vs QMainWindow
         msg.setText("로그아웃되었습니다.")
         msg.setStyleSheet("QLabel { color: black; } QPushButton { color: black; }")
         msg.exec_()
+#-------------------------------------------
 
+    def plot_graph24(self):
+            self.conn = pymysql.connect(host='localhost', user='root', password= "whdgh29k05" ,charset='utf8')
+            self.cursor = self.conn.cursor()
+            self.cursor.execute("USE smart_farm ;")
+            self.cursor.execute("SET @row_number = 0;")
+            interval_query = """
+                SELECT *
+                FROM (
+                    SELECT *, (@row_number := @row_number + 1) AS rn
+                    FROM SMART_FARM
+                    ORDER BY Time DESC
+                ) AS NumberedRows
+                WHERE MOD(rn, 1800) = 0
+                ORDER BY Time DESC
+                LIMIT 24;
+            """
+            self.cursor.execute(interval_query)
+            interval_rows = self.cursor.fetchall()
+            # 컬럼 이름 가져오기
+            column_names = [desc[0] for desc in self.cursor.description]
+            df = pd.DataFrame(interval_rows, columns=column_names)
+            df['Time'] = pd.to_datetime(df['Time'])
+            self.cursor.close()
+            self.conn.close()
+            x = np.arange(len(df))
+            y_water = df['Water_Level'].values
+            y_nutrient = df['Nutrient_Level'].values
+            print("Water Level:", y_water)
+            print("Nutrient Level:", y_nutrient)
+            self.graph24_plot = self.graph24_canvas.addPlot(title="Water and Nutrient Levels Over Time")
+            self.graph24_plot.clear()
+            water_graph = self.graph24_plot.plot(x, y_water, pen='skyblue', name='Water Level')
+            nutrient_graph = self.graph24_plot.plot(x, y_nutrient, pen='green', name='Nutrient Level')
+            water_graph = self.graph24_plot.plot(x, y_water, pen='skyblue', name='Water Level')
+            nutrient_graph = self.graph24_plot.plot(x, y_nutrient, pen='green', name='Nutrient Level')
+            self.legend = self.graph24_plot.addLegend()
+            self.legend.addItem(water_graph, 'Water Level')
+            self.legend.addItem(nutrient_graph, 'Nutrient Level')
+            self.graph24_plot.setLabel("left", "Level (%)")
+            self.graph24_plot.setLabel("bottom", "Time")
+            self.graph24_plot.setTitle("Water and Nutrient Levels Over 24 Hours")
+            self.graph24_canvas.update()
+    
+    def plot_graph_history(self):
+        date = self.combo_value()
+        self.conn = pymysql.connect(host='localhost', user='root', password= "whdgh29k05" ,charset='utf8')
+        self.cursor = self.conn.cursor()
+        self.cursor.execute("USE smart_farm ;")
+        self.cursor.execute("SET @row_number = 0;")
+        interval_query = f"""
+            SELECT *
+            FROM (
+                SELECT *, (@row_number := @row_number + 1) AS rn
+                FROM SMART_FARM
+                WHERE DATE(Time) = '{date}'
+                ORDER BY Time DESC
+            ) AS NumberedRows
+            WHERE MOD(rn, 1800) = 0
+            ORDER BY Time DESC
+            LIMIT 24;
+            """
+        self.cursor.execute(interval_query)
+        interval_rows = self.cursor.fetchall()
+        # 컬럼 이름 가져오기
+        column_names = [desc[0] for desc in self.cursor.description]
+        df = pd.DataFrame(interval_rows, columns=column_names)
+        df['Time'] = pd.to_datetime(df['Time'])
+        self.cursor.close()
+        self.conn.close()
+        x = np.arange(len(df))
+        y_water = df['Water_Level'].values
+        y_nutrient = df['Nutrient_Level'].values
+        print("Water Level:", y_water)
+        print("Nutrient Level:", y_nutrient)
+        self.graph24_plot = self.graph24_canvas.addPlot(title="Water and Nutrient Levels Over Time")
+        self.graph24_plot.clear()
+        water_graph = self.graph24_plot.plot(x, y_water, pen='skyblue', name='Water Level')
+        nutrient_graph = self.graph24_plot.plot(x, y_nutrient, pen='green', name='Nutrient Level')
+        water_graph = self.graph24_plot.plot(x, y_water, pen='skyblue', name='Water Level')
+        nutrient_graph = self.graph24_plot.plot(x, y_nutrient, pen='green', name='Nutrient Level')
+        # i am trying to update the whole grapd whenever combo
+        self.legend = self.graph24_plot.addLegend()
+        self.legend.addItem(water_graph, 'Water Level')
+        self.legend.addItem(nutrient_graph, 'Nutrient Level')
+        self.graph24_plot.setLabel("left", "Level (%)")
+        self.graph24_plot.setLabel("bottom", "Time")
+        self.graph24_plot.setTitle("Water and Nutrient Levels Over 24 Hours")
+    
+    def get_date_list(self):
+        self.conn = pymysql.connect(host='localhost', user='root', password= "whdgh29k05" ,charset='utf8')
+        self.cursor = self.conn.cursor()
+        self.cursor.execute("USE smart_farm ;")
+        query = """
+        SELECT DISTINCT DATE(Time) AS unique_date
+        FROM SMART_FARM
+        ORDER BY unique_date DESC;
+        """
+        self.cursor.execute(query)
+        dates = self.cursor.fetchall()
+        date_strings = [str(date[0]) for date in dates]
+        return date_strings
+    
+    def combo_value(self):
+        selected_date = self.comboBox.currentText()
+        print(selected_date)
+        return selected_date
+#-------------------------------------------
 
 if __name__ == '__main__':
     App = QApplication(sys.argv)
