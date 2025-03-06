@@ -1,6 +1,8 @@
 
 ![system_architecture](https://github.com/user-attachments/assets/7bf3d637-bb49-4fa9-bd7a-8d599a98806e)
 
+[PPT 링크](https://docs.google.com/presentation/d/1ggPNrnSeVovyCdoah-VRCkFlJqgdLUMNempdSXxGVjI/edit?usp=sharing)
+
 ***
 
 ## 🌱 개요
